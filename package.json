@@ -18,7 +18,6 @@
     "messaging",
     "api",
     "rpc",
-    "messaging",
     "protocol"
   ],
   "engines": {

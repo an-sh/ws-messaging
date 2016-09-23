@@ -2,6 +2,7 @@
 
 [![NPM Version](https://badge.fury.io/js/ws-messaging.svg)](https://badge.fury.io/js/ws-messaging)
 [![Build Status](https://travis-ci.org/an-sh/ws-messaging.svg?branch=master)](https://travis-ci.org/an-sh/ws-messaging)
+[![Appveyor status](https://ci.appveyor.com/api/projects/status/d14wp6ei50tmqy49?svg=true)](https://ci.appveyor.com/project/an-sh/ws-messaging)
 [![Coverage Status](https://codecov.io/gh/an-sh/ws-messaging/branch/master/graph/badge.svg)](https://codecov.io/gh/an-sh/ws-messaging)
 [![Dependency Status](https://david-dm.org/an-sh/ws-messaging.svg)](https://david-dm.org/an-sh/ws-messaging)
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
