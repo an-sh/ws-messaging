@@ -1,0 +1,10 @@
+
+*.log
+logs
+/docs
+/coverage
+node_modules
+npm-debug.log
+.nyc_output
+ws-messaging.min.js
+/lib

@@ -1,0 +1,72 @@
+{
+  "name": "ws-messaging",
+  "version": "0.1.0",
+  "description": "A minimalistic solution for creating messaging (or bidirectional RPC) APIs over websockets.",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "compile": "babel src --out-dir lib",
+    "prebundle-client": "npm run compile",
+    "bundle-client": "browserify -g uglifyify lib/Client.js -o ws-messaging.min.js",
+    "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+    "generate-docs": "jsdoc --configure .jsdoc.json --verbose",
+    "prepublish": "npm run bundle-client",
+    "test": "cross-env NODE_ENV=test nyc mocha"
+  },
+  "keywords": [
+    "websockets",
+    "messaging",
+    "api",
+    "rpc",
+    "messaging",
+    "protocol"
+  ],
+  "engines": {
+    "node": ">=0.12.0"
+  },
+  "author": "Andrey Sharapov <an.sh.1@yandex.ru> (https://github.com/an-sh)",
+  "license": "MIT",
+  "dependencies": {
+    "eventemitter3": "^2.0.0",
+    "promise-polyfill": "^6.0.2",
+    "uid-safe": "^2.1.2",
+    "ws": "^1.1.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-eslint": "^6.1.2",
+    "babel-plugin-istanbul": "^2.0.1",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-register": "^6.14.0",
+    "browserify": "^13.1.0",
+    "chai": "^3.5.0",
+    "codecov": "^1.0.1",
+    "cross-env": "^2.0.1",
+    "docdash": "^0.4.0",
+    "event-to-promise": "^0.7.0",
+    "jsdoc": "^3.4.1",
+    "mocha": "^3.0.2",
+    "msgpack-lite": "^0.1.20",
+    "nyc": "^8.1.0",
+    "safe-buffer": "^5.0.1",
+    "standard": "^8.0.0",
+    "uglifyify": "^3.0.3"
+  },
+  "nyc": {
+    "require": [
+      "babel-register"
+    ],
+    "include": [
+      "src/**/*.js"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ],
+    "sourceMap": false,
+    "instrument": false
+  },
+  "standard": {
+    "parser": "babel-eslint"
+  }
+}
