@@ -1,6 +1,6 @@
 {
   "name": "ws-messaging",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A minimalistic solution for creating messaging (or bidirectional RPC) APIs over websockets.",
   "main": "index.js",
   "private": false,
@@ -24,6 +24,10 @@
     "node": ">=0.12.0"
   },
   "author": "Andrey Sharapov <an.sh.1@yandex.ru> (https://github.com/an-sh)",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/an-sh/ws-messaging.git"
+  },
   "license": "MIT",
   "dependencies": {
     "eventemitter3": "^2.0.0",
