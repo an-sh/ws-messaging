@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "A minimalistic solution for creating messaging (or bidirectional RPC) APIs over websockets.",
   "main": "index.js",
-  "private": true,
+  "private": false,
   "scripts": {
     "compile": "babel src --out-dir lib",
     "prebundle-client": "npm run compile",

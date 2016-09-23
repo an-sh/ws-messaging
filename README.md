@@ -35,9 +35,9 @@ and web browsers with a promise and event emitter based interface.
 - [Contribute](#contribute)
 - [License](#license)
 
-## Install
+## Installation
 
-```
+```sh
 npm i ws-messaging
 ```
 
