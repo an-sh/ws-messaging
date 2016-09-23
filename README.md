@@ -1,4 +1,4 @@
-# Title
+# ws-messaging
 
 [![NPM Version](https://badge.fury.io/js/ws-messaging.svg)](https://badge.fury.io/js/ws-messaging)
 [![Build Status](https://travis-ci.org/an-sh/ws-messaging.svg?branch=master)](https://travis-ci.org/an-sh/ws-messaging)
