@@ -6,7 +6,7 @@ const EventEmitter = require('events')
 const WebSocket = require('ws')
 const WebSocketServer = require('ws').Server
 const uid = require('uid-safe')
-const { CLOSE_FORBIDDEN, CLOSE_NORMAL } = require('./constants')
+const { CLOSE_FORBIDDEN } = require('./constants')
 const { assign, attempt, fromCallback, toEmit } = require('./utils')
 
 const defaults = {
@@ -131,11 +131,12 @@ class Server extends EventEmitter {
 
   /**
    * Closes a server.
+   * @param {code} [code=1000] Code as per WebSocket spec.
    * @returns {Promise<undefined>} Promise.
    */
-  close () : Promise<void> {
+  close (code = 1000) : Promise<void> {
     for (let [, client] of this.clients) {
-      client.close(CLOSE_NORMAL)
+      client.close(code)
     }
     this.clients.clear()
     return fromCallback(cb => this.wss.close(cb))
