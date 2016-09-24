@@ -134,7 +134,7 @@ class Server extends EventEmitter {
    * @param {code} [code=1000] Code as per WebSocket spec.
    * @returns {Promise<undefined>} Promise.
    */
-  close (code = 1000) : Promise<void> {
+  close (code: number = 1000) : Promise<void> {
     for (let [, client] of this.clients) {
       client.close(code)
     }
