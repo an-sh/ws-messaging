@@ -104,7 +104,7 @@ class Server extends EventEmitter {
         client._setEvents()
         client.connected = true
         this.clients.set(client.id, client)
-        client.on('close', () => this._removeClient(this.id))
+        client.on('close', () => this._removeClient(client.id))
         client.send('connect', authReplyData)
       }
     }).catch(error => {
