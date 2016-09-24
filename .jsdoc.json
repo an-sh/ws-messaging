@@ -5,12 +5,14 @@
   },
   "source": {
     "include": ["src", "README.md"],
-    "includePattern": ".js$",
-    "excludePattern": "(node_modules/|docs/|lib/|test/)"
+    "includePattern": ".js$"
   },
   "plugins": [
-    "plugins/markdown"
+    "node_modules/jsdoc-babel/lib/index"
   ],
+  "babel": {
+    "plugins": ["transform-flow-strip-types"]
+  },
   "templates": {
     "cleverLinks": true,
     "monospaceLinks": false,

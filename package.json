@@ -52,6 +52,7 @@
     "event-to-promise": "^0.7.0",
     "flow-bin": "^0.32.0",
     "jsdoc": "^3.4.1",
+    "jsdoc-babel": "^0.2.1",
     "mocha": "^3.0.2",
     "msgpack-lite": "^0.1.20",
     "nyc": "^8.1.0",
