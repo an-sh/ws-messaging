@@ -1,7 +1,7 @@
 {
   "name": "ws-messaging",
   "version": "0.1.1",
-  "description": "A minimalistic solution for creating messaging (or bidirectional RPC) APIs over websockets.",
+  "description": "A minimalistic abstraction layer for websockets.",
   "main": "index.js",
   "private": false,
   "scripts": {

@@ -17,12 +17,12 @@ and web browsers with a promise and event emitter based interface.
 - Request-reply API using promises (works in both directions, without
   any connection blocking during processing).
 
-- Built-in auth method via WebSocket messages exchange (no more query
+- Built-in auth via WebSocket messages exchange (no more query
   strings).
 
 - Reconnection method is provided.
 
-- Real binary messages support via custom encoders/decoders.
+- Binary messages support via custom encoders/decoders.
 
 - Reasonable client size (14KB minified, including a Promise
   polyfill).
@@ -85,7 +85,9 @@ client.on('connection', () => {
 
 client.on('close', () => {
   /* close, but a client is able to try to reconnect */
-  setTimeout(client.reconnect.bind(client), 1000)
+  if (!client.terminated) {
+    setTimeout(client.reconnect.bind(client), 2000)
+  }
 })
 ```
 
