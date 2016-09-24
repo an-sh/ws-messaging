@@ -36,7 +36,7 @@ type ConnectionHook = (client: Client, data?: any) => Promise<any>
  * @property {Object} [Server] Alternative constructor for wss
  * server.
  */
-type ServerOptions = { Server?: Class<any>, connectionHook?: ConnectionHook }
+type ServerOptions = { Server?: constructor, connectionHook?: ConnectionHook }
 
 type SocketOptions = Object
 
@@ -47,7 +47,7 @@ type SocketOptions = Object
  * @emits Server#error
  */
 class Server extends EventEmitter {
-  Server: Class<any>
+  Server: constructor
   clients: Map<string, Object>
   connectionHook: ConnectionHook
   socketOptions: Object
