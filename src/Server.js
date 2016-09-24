@@ -1,4 +1,5 @@
 'use strict'
+// @flow
 
 const Client = require('./Client')
 const EventEmitter = require('events')
@@ -14,35 +15,44 @@ const defaults = {
 }
 
 /**
+ * Connection hook is run when a client connects to a server. The
+ * result is used as an auth reply data. May also return promises
+ * for an asynchronous execution.
+ *
+ * @callback Server.ConnectionHook
+ *
+ * @param {Client} client Client.
+ * @param {Object} auth Auth data.
+ * @return {Promise<Object|undefined>|Object|undefined} Auth reply
+ * data.
+ */
+type ConnectionHook = (client: Client, data?: any) => Promise<any>
+
+/**
+ * @typedef {Object} ServerOptions
+ * @memberof Server
+ *
+ * @property {Server.ConnectionHook} [connectionHook] Connection
+ * hook.
+ * @property {Object} [Server] Alternative constructor for wss
+ * server.
+ */
+type ServerOptions = { Server?: Class<any>, connectionHook?: ConnectionHook }
+
+type SocketOptions = Object
+
+/**
  * @extends EventEmitter
  *
  * @emits Server#ready
  * @emits Server#error
  */
 class Server extends EventEmitter {
-
-  /**
-   * Connection hook is run when a client connects to a server. The
-   * result is used as an auth reply data. May also return promises
-   * for an asynchronous execution.
-   *
-   * @callback Server.ConnectionHook
-   *
-   * @param {Client} client Client.
-   * @param {Object} auth Auth data.
-   * @return {Promise<Object|undefined>|Object|undefined} Auth reply
-   * data.
-   */
-
-  /**
-   * @typedef {Object} ServerOptions
-   * @memberof Server
-   *
-   * @property {Server.ConnectionHook} [connectionHook] Connection
-   * hook.
-   * @property {Object} [Server] Alternative constructor for wss
-   * server.
-   */
+  Server: Class<any>
+  clients: Map<string, Object>
+  connectionHook: ConnectionHook
+  socketOptions: Object
+  wss: Object
 
   /**
    * Starts a server.
@@ -51,7 +61,9 @@ class Server extends EventEmitter {
    * @param {Server.ServerOptions} [serverOptions] Server options.
    * @param {Client.SocketOptions} [socketOptions] Socket options.
    */
-  constructor (wssOptions, serverOptions = {}, socketOptions = {}) {
+  constructor (wssOptions: Object,
+               serverOptions: ServerOptions = {},
+               socketOptions: SocketOptions = {}) {
     super()
     this.socketOptions = { WebSocket }
     assign(this.socketOptions, socketOptions)
@@ -60,7 +72,7 @@ class Server extends EventEmitter {
     this._setEvents(wssOptions)
   }
 
-  _setEvents (wssOptions) {
+  _setEvents (wssOptions: Object) : void {
     /**
      * Emits ready event.
      * @event Server#ready
@@ -75,11 +87,11 @@ class Server extends EventEmitter {
     this.wss.on('connection', socket => this._onConnection(socket))
   }
 
-  _onConnection (socket) {
+  _onConnection (socket: EventEmitter) : void {
     socket.once('message', data => this._addClient(socket, data))
   }
 
-  _addClient (socket, data) {
+  _addClient (socket: EventEmitter, data?: any) : void {
     let client
     uid(18).then(id => {
       client = new Client(null, assign({socket, id}, this.socketOptions))
@@ -104,7 +116,7 @@ class Server extends EventEmitter {
     })
   }
 
-  _removeClient (id) {
+  _removeClient (id: string) : void {
     this.clients.delete(id)
   }
 
@@ -113,7 +125,7 @@ class Server extends EventEmitter {
    * @param {string} id Client id.
    * @returns {Client|undefined} Client if found.
    */
-  getClient (id) {
+  getClient (id: string) : Client {
     return this.clients.get(id)
   }
 
@@ -121,7 +133,7 @@ class Server extends EventEmitter {
    * Closes a server.
    * @returns {Promise<undefined>} Promise.
    */
-  close () {
+  close () : Promise<void> {
     for (let [, client] of this.clients) {
       client.close(CLOSE_NORMAL)
     }
