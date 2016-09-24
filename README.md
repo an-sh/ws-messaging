@@ -8,7 +8,7 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 Just a really thin abstraction layer on top of WebSocket for Node.js
-and web browsers with a promise and event emitter based interface.
+and Web browsers with a Promises and EventEmitter based APIs.
 
 ### Features
 
@@ -43,7 +43,7 @@ npm i ws-messaging
 
 ## Usage
 
-On a server.
+On a server:
 
 ```javascript
 const Server = require('ws-messaging')
@@ -59,7 +59,7 @@ function connectionHook (client, authData) {
 let server = new Server({port}, {connectionHook})
 ```
 
-On a client.
+On a client:
 
 ```javascript
 const Client = require('ws-messaging/client')
@@ -91,7 +91,7 @@ client.on('close', () => {
 })
 ```
 
-See `test/index.js` for more usage examples.
+See tests in `test/index.js` for more usage examples.
 
 ## API
 

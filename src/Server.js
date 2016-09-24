@@ -29,8 +29,7 @@ const defaults = {
 type ConnectionHook = (client: Client, data?: any) => Promise<any>
 
 /**
- * @typedef {Object} ServerOptions
- * @memberof Server
+ * @typedef {Object} Server.ServerOptions
  *
  * @property {Server.ConnectionHook} [connectionHook] Connection
  * hook.

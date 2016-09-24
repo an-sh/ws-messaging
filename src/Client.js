@@ -118,6 +118,67 @@ class Ack {
 
 // client
 
+/**
+ * General format for all data that is sent or received over a
+ * websocket.
+ *
+ * @typedef {Object} Client.Message
+ *
+ * @property {number} [id]
+ * @property {string} [name]
+ * @property {Array} [args]
+ * @property {Object} [result]
+ * @property {Object} [error]
+ */
+
+/**
+ * Messages decoder. May also return promises for an asynchronous
+ * execution.
+ *
+ * @callback Client.Encoder
+ * @param {Client.Message} message Message.
+ * @return {Promise<Object>|Object} Data to send.
+ */
+
+/**
+ * Messages encoder. May also return promises for an asynchronous
+ * execution.
+ *
+ * @callback Client.Decoder
+ * @param {Object} data Received data.
+ * @return {Promise<Client.Message>|Client.Message} Message.
+ */
+
+/**
+ * Receive hook is run when a client receives a message via a
+ * websocket. May also return promises for an asynchronous
+ * execution.
+ *
+ * @callback Client.ReceiveHook
+ * @param {Client.Message} message Message.
+ * @return {Promise<undefined>|undefined} Promise, if it is rejected no
+ * handlers will be called.
+ */
+
+/**
+ * @typedef {Object} Client.SocketOptions
+ *
+ * @property {number} [ackWaitTimeout=20000] RPC ack wait timeout.
+ * @property {Object} [auth={}] Auth data.
+ * @property {string} [binaryType='arraybuffer'] W3C WebSocket
+ * binary data type.
+ * @property {Client.Decoder} [decoder=JSON.parse] Messages decoder.
+ * @property {Client.Encoder} [decoder=JSON.stringify] Messages
+ * decoder.
+ * @property {function} [errorFormatter=String] Converter for JS
+ * errors to some network format.
+ * @property {string|Array<string>} [protocols='ws-messaging']
+ * WebSocket protocols.
+ * @property {Client.ReceiveHook} [receiveHook] Receive hook.
+ * @property {boolean} [skipValidation=false] Skips build-in
+ * messages validation.
+ */
+
 const defaults = {
   ackWaitTimeout: 20000,
   auth: {},
@@ -139,70 +200,6 @@ const defaults = {
  * @emits Client#connect
  */
 class Client extends EventEmitter {
-
-  /**
-   * General format for all data that is sent or received over a
-   * websocket.
-   *
-   * @typedef {Object} Message
-   * @memberof Client
-   *
-   * @property {number} [id]
-   * @property {string} [name]
-   * @property {Array} [args]
-   * @property {Object} [result]
-   * @property {Object} [error]
-   */
-
-  /**
-   * Messages decoder. May also return promises for an asynchronous
-   * execution.
-   *
-   * @callback Client.Encoder
-   * @param {Client.Message} message Message.
-   * @return {Promise<Object>|Object} Data to send.
-   */
-
-  /**
-   * Messages encoder. May also return promises for an asynchronous
-   * execution.
-   *
-   * @callback Client.Decoder
-   * @param {Object} data Received data.
-   * @return {Promise<Client.Message>|Client.Message} Message.
-   */
-
-  /**
-   * Receive hook is run when a client receives a message via a
-   * websocket. May also return promises for an asynchronous
-   * execution.
-   *
-   * @callback Client.ReceiveHook
-   * @param {Client.Message} message Message.
-   * @return {Promise<undefined>|undefined} Promise, if it is rejected no
-   * handlers will be called.
-   */
-
-  /**
-   * @typedef {Object} SocketOptions
-   * @memberof Client
-   *
-   * @property {number} [ackWaitTimeout=20000] RPC ack wait timeout.
-   * @property {Object} [auth={}] Auth data.
-   * @property {string} [binaryType='arraybuffer'] W3C WebSocket
-   * binary data type.
-   * @property {Client.Decoder} [decoder=JSON.parse] Messages decoder.
-   * @property {Client.Encoder} [decoder=JSON.stringify] Messages
-   * decoder.
-   * @property {function} [errorFormatter=String] Converter for JS
-   * errors to some network format.
-   * @property {string|Array<string>} [protocols='ws-messaging']
-   * WebSocket protocols.
-   * @property {Client.ReceiveHook} [receiveHook] Receive hook.
-   * @property {boolean} [skipValidation=false] Skips build-in
-   * messages validation.
-   */
-
   /**
    * Creates a client.
    *
@@ -215,6 +212,7 @@ class Client extends EventEmitter {
     /**
      * Client id. Server-side only.
      * @member {number}
+     * @readonly
      */
     this.id
     assign(this, defaults, options)
@@ -225,6 +223,7 @@ class Client extends EventEmitter {
     /**
      * If true, then a client is connected.
      * @member {boolean}
+     * @readonly
      */
     this.connected = false
     this.counter = 1
@@ -235,6 +234,7 @@ class Client extends EventEmitter {
      * If true, then a client was closed via a close method or an auth
      * error occurred.
      * @member {boolean}
+     * @readonly
      */
     this.terminated = false
     this.reconnect()
@@ -307,7 +307,8 @@ class Client extends EventEmitter {
   }
 
   /**
-   * Socket connection is open and client has passed an auth check.
+   * Socket connection is open and client has passed an auth
+   * check. Client-side only.
    * @event Client#connect
    * @param {Object|undefined} data Auth reply data.
    */
@@ -346,8 +347,8 @@ class Client extends EventEmitter {
   }
 
   /**
-   * Send an event, no reply. Use `on` or `once` methods to listen
-   * events on a recipient side.
+   * Send an event, no reply. Use {@link on} or {@link once} methods
+   * to listen events on a recipient side.
    * @param {string} event Event name.
    * @param {*} [args] Arguments.
    * @returns {Promise<undefined>} Resolves when a data has been sent.
@@ -358,8 +359,8 @@ class Client extends EventEmitter {
   }
 
   /**
-   * Invoke an RPC procedure. Use `register` method to assign an RPC
-   * handler.
+   * Invoke an RPC procedure. Use {@link Client#register} method to
+   * assign an RPC method handler.
    * @param {string} name Procedure name.
    * @param {*} [args] Arguments.
    * @returns {Promise<Object>} Resolves or rejects when a reply is
@@ -372,8 +373,8 @@ class Client extends EventEmitter {
 
   /**
    * Register an RPC handler. Each name must have no more than a one
-   * handler. Throws an error on a duplicate handler registration
-   * attempt.
+   * handler, so it throws an error on a duplicate handler
+   * registration attempt. Use {@link Client#invoke} to call a method.
    * @param {string} name Procedure name.
    * @param {function} handler A function that returns a Promise.
    */
@@ -394,6 +395,7 @@ class Client extends EventEmitter {
       /**
        * Underlying websocket.
        * @member {WebSocket}
+       * @readonly
        */
       this.socket = new this.WebSocket(this.url, this.protocols)
       if (this.w3c) { this.socket.binaryType = this.binaryType }
