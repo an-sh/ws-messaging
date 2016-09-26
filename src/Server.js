@@ -1,5 +1,7 @@
-'use strict'
+// -*-Javascript-*-
 // @flow
+
+'use strict'
 
 const Client = require('./Client')
 const EventEmitter = require('events')
