@@ -95,8 +95,8 @@ See tests in `test/index.js` for more usage examples.
 
 ## API
 
-[Server API](https://an-sh.github.io/ws-messaging/0.1/Server.html) and
-[Client API](https://an-sh.github.io/ws-messaging/0.1/Client.html)
+[Server API](https://an-sh.github.io/ws-messaging/0.2/Server.html) and
+[Client API](https://an-sh.github.io/ws-messaging/0.2/Client.html)
 documentation is available online.
 
 
