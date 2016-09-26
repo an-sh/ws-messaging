@@ -13,7 +13,8 @@ const { assign, attempt, fromCallback, toEmit } = require('./utils')
 
 const defaults = {
   Server: WebSocketServer,
-  connectionHook: null
+  connectionHook: null,
+  authTimeout: 20000
 }
 
 /**
@@ -37,8 +38,13 @@ type ConnectionHook = (client: Client, data?: any) => Promise<any>
  * hook.
  * @property {Object} [Server] Alternative constructor for wss
  * server.
+ * @property {number} [authTimeout=20000] Auth message wait timeout in
+ * ms.
  */
-type ServerOptions = { Server?: constructor, connectionHook?: ConnectionHook }
+type ServerOptions = { Server?: constructor,
+                       connectionHook?: ConnectionHook,
+                       authTimeout?: number
+                     }
 
 type SocketOptions = Object
 
@@ -49,6 +55,7 @@ type SocketOptions = Object
  * @emits Server#error
  */
 class Server extends EventEmitter {
+  authTimeout: number
   Server: constructor
   clients: Map<string, Object>
   connectionHook: ConnectionHook
@@ -88,12 +95,15 @@ class Server extends EventEmitter {
     this.wss.on('connection', socket => this._onConnection(socket))
   }
 
-  _onConnection (socket: EventEmitter) : void {
-    socket.once('message', data => this._addClient(socket, data))
+  _onConnection (socket: Object & EventEmitter) : void {
+    let timer =
+        setTimeout(socket.close.bind(socket, CLOSE_FORBIDDEN), this.authTimeout)
+    socket.once('message', data => this._addClient(socket, data, timer))
   }
 
-  _addClient (socket: EventEmitter, data?: any) : void {
+  _addClient (socket: EventEmitter, data: any, timer: number) : void {
     let client
+    clearTimeout(timer)
     uid(18).then(id => {
       client = new Client(null, assign({socket, id}, this.socketOptions))
       if (this.connectionHook) {

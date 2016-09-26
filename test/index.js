@@ -80,6 +80,7 @@ describe('ws-messaging', function () {
     client = new Client(url, {WebSocket})
     return eventToPromise(client, 'close', {error: 'connect'})
       .then(ev => {
+        expect(ev.code).eql(4003)
         expect(ev.reason).eql(error.toString())
         expect(client.terminated).true
       })
@@ -212,6 +213,30 @@ describe('ws-messaging', function () {
       return eventToPromise(c, ('someEvent'))
     }).then(d => {
       expect(d).eql(data)
+    })
+  })
+
+  it('should be able to close disconnected sockets', function () {
+    let c
+    function connectionHook (_client) {
+      c = _client
+    }
+    server = new Server({port}, {connectionHook})
+    global.WebSocket = WebSocket
+    client = new Client(url)
+    return eventToPromise(client, 'connect').then(() => {
+      c.close()
+      return eventToPromise(client, 'close').then(() => client.close())
+    })
+  })
+
+  it('should close sockets on an auth timeout', function () {
+    this.timeout(4000)
+    this.slow(2000)
+    server = new Server({port}, {authTimeout:1000})
+    let socket = new WebSocket(url)
+    return eventToPromise(socket, 'close').then(ev => {
+      expect(ev.code).eql(4003)
     })
   })
 
