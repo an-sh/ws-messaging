@@ -260,7 +260,8 @@ class Client extends EventEmitter {
      */
     this.socket.onopen = this.emit.bind(this, 'open')
     /**
-     * Emits w3c onerror WebSocket events.
+     * Emits w3c onerror WebSocket events. Does __NOT__ throw if there
+     * are no listeners.
      * @event Client#error
      * @param {Error} error Error.
      */

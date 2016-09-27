@@ -2,7 +2,7 @@
 'use strict'
 
 const Client = require('./Client')
-const EventEmitter = require('events')
+const EventEmitter = require('eventemitter3')
 const WebSocket = require('ws')
 const WebSocketServer = require('ws').Server
 const uid = require('uid-safe')
@@ -89,7 +89,8 @@ class Server extends EventEmitter {
      */
     this.wss = new this.Server(wssOptions, toEmit(this))
     /**
-     * Emits wss error events.
+     * Emits wss error events. Does __NOT__ throw if there are no
+     * listeners.
      * @event Server#error
      * @param {Error} error Error.
      */
