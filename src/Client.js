@@ -174,6 +174,7 @@ class Ack {
  * decoder.
  * @property {function} [errorFormatter=String] Converter for JS
  * errors to some network format.
+ * @property {number} [pingInterval=10000] Ping interval.
  * @property {string|Array<string>} [protocols='ws-messaging']
  * WebSocket protocols.
  * @property {Client.ReceiveHook} [receiveHook] Receive hook.
@@ -264,8 +265,8 @@ class Client extends EventEmitter {
      */
     this.socket.onopen = emit.bind(this, 'open')
     /**
-     * Emits w3c onerror WebSocket events. Does __NOT__ throw if there
-     * are no listeners.
+     * Emits w3c onerror WebSocket events. Does not throw if there are
+     * no listeners.
      * @event Client#error
      * @param {Error} error Error.
      */
@@ -366,7 +367,8 @@ class Client extends EventEmitter {
 
   /**
    * Send an event, no reply. Use {@link on} or {@link once} methods
-   * to listen events on a recipient side.
+   * to listen events on a recipient side. Reserved event names (must
+   * not be used): connect, close, open, error, ping, pong, retry.
    * @param {string} event Event name.
    * @param {*} [args] Arguments.
    * @returns {Promise<undefined>} Resolves when a data has been sent.
@@ -378,7 +380,8 @@ class Client extends EventEmitter {
 
   /**
    * Invoke an RPC procedure. Use {@link Client#register} method to
-   * assign an RPC method handler.
+   * assign an RPC method handler. Reserved procedure names (must not
+   * be used): connect, close, open, error, ping, pong, retry.
    * @param {string} name Procedure name.
    * @param {*} [args] Arguments.
    * @returns {Promise<Object>} Resolves or rejects when a reply is

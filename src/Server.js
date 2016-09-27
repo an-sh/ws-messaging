@@ -89,7 +89,7 @@ class Server extends EventEmitter {
      */
     this.wss = new this.Server(wssOptions, toEmit(this))
     /**
-     * Emits wss error events. Does __NOT__ throw if there are no
+     * Emits wss error events. Does not throw if there are no
      * listeners.
      * @event Server#error
      * @param {Error} error Error.
