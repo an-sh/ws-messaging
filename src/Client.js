@@ -4,7 +4,7 @@
 const EventEmitter = require('eventemitter3')
 const { assign, attempt, fromCallback, Promise } = require('./utils')
 
-const blacklist = [ 'close', 'open', 'error', 'ping', 'retry' ]
+const blacklist = [ 'close', 'open', 'error', 'pong', 'retry' ]
 
 // utils
 
@@ -97,17 +97,17 @@ class Ack {
       this.reject = reject
     })
     this.cb = cb
-    this.timer = setTimeout(() => this.forceNack(new TimeoutError(id)), timeout)
+    this.timeout = setTimeout(() => this.forceNack(new TimeoutError(id)), timeout)
   }
 
   forceNack (error) {
-    clearTimeout(this.timer)
+    clearTimeout(this.timeout)
     this.cb()
     this.reject(error)
   }
 
   settle (message) {
-    clearTimeout(this.timer)
+    clearTimeout(this.timeout)
     this.cb()
     if (message.hasOwnProperty('error')) {
       let error = new RPCError(message.error)
@@ -188,6 +188,7 @@ const defaults = {
   decoder: JSON.parse,
   encoder: JSON.stringify,
   errorFormatter: String,
+  pingInterval: 10000,
   protocols: 'ws-messaging',
   receiveHook: null,
   skipValidation: false
@@ -239,6 +240,7 @@ class Client extends EventEmitter {
      * @readonly
      */
     this.terminated = false
+    this.register('ping', () => Promise.resolve())
     this.reconnect()
   }
 
@@ -272,6 +274,18 @@ class Client extends EventEmitter {
     this.socket.onmessage = this._onMessage.bind(this)
   }
 
+  _ping () {
+    this.pingTimeout = setTimeout(() => {
+      emit.call(this, 'ping')
+      this.invoke('ping')
+        .then(() => {
+          emit.call(this, 'pong')
+          this._ping()
+        })
+        .catch(() => this.close(4008, 'Ping timeout', false))
+    }, this.pingInterval)
+  }
+
   _isOpen () {
     return this.socket &&
       (this.socket.readyState === 0 || this.socket.readyState === 1)
@@ -279,6 +293,7 @@ class Client extends EventEmitter {
 
   _onClose (ev) {
     this.connected = false
+    clearTimeout(this.pingTimeout)
     if (ev.code === 4003) { this.terminated = true }
     for (let id in this.pendingAcks) {
       /* istanbul ignore else */
@@ -404,7 +419,10 @@ class Client extends EventEmitter {
       if (this.w3c) { this.socket.binaryType = this.binaryType }
       this.once('open', () => {
         this._send(this.auth)
-        this.once('connect', () => { this.connected = true })
+        this.once('connect', () => {
+          this.connected = true
+          this._ping()
+        })
       })
       this._setEvents()
     } else {
@@ -416,10 +434,12 @@ class Client extends EventEmitter {
    * Closes a client connection.
    * @param {number} [code=1000] Code as per WebSocket spec.
    * @param {string} [str] Optional string.
+   * @param {boolean} [terminate=true] Disable reconnect.
    */
-  close (code = 1000, str) {
+  close (code = 1000, str, terminate = true) {
+    clearTimeout(this.pingTimeout)
     if (!this.terminated) {
-      this.terminated = true
+      this.terminated = terminate
       if (this._isOpen()) { this.socket.close(code, str) }
     }
   }

@@ -99,16 +99,16 @@ class Server extends EventEmitter {
   }
 
   _onConnection (socket /* : Object & EventEmitter */) /* : void */ {
-    let timer =
+    let timeout =
         setTimeout(socket.close.bind(socket, CLOSE_FORBIDDEN), this.authTimeout)
-    socket.once('message', data => this._addClient(socket, data, timer))
+    socket.once('message', data => this._addClient(socket, data, timeout))
   }
 
   _addClient (socket /* : EventEmitter */,
               data /* : any */,
-              timer /* : number */) /* : void */ {
+              timeout /* : number */) /* : void */ {
     let client
-    clearTimeout(timer)
+    clearTimeout(timeout)
     uid(18).then(id => {
       client = new Client(null, assign({socket, id}, this.socketOptions))
       if (this.connectionHook) {
@@ -122,6 +122,7 @@ class Server extends EventEmitter {
         this.clients.set(client.id, client)
         client.on('close', () => this._removeClient(client.id))
         client.send('connect', authReplyData)
+        client._ping()
       }
     }).catch(error => {
       /* istanbul ignore else */

@@ -233,7 +233,7 @@ describe('ws-messaging', function () {
   it('should close sockets on an auth timeout', function () {
     this.timeout(4000)
     this.slow(2000)
-    server = new Server({port}, {authTimeout:1000})
+    server = new Server({port}, {authTimeout: 1000})
     let socket = new WebSocket(url)
     return eventToPromise(socket, 'close').then(ev => {
       expect(ev.code).eql(4003)
@@ -252,11 +252,37 @@ describe('ws-messaging', function () {
     }
     server = new Server({port}, {connectionHook})
     client = new Client(url, {WebSocket})
-    client.on('error', (e) => console.log(e))
     return eventToPromise(client, 'close').then(() => {
       client.reconnect()
       return eventToPromise(client, 'connect')
     })
+  })
+
+  it('should send pings from both sides', function () {
+    this.timeout(4000)
+    this.slow(2000)
+    let c
+    function connectionHook (client) { c = client }
+    server = new Server({port}, {connectionHook}, {pingInterval: 1000})
+    client = new Client(url, {WebSocket, pingInterval: 1000})
+    return eventToPromise(client, 'connect')
+      .then(() => Promise.all([ eventToPromise(client, 'ping'),
+                                eventToPromise(client, 'pong'),
+                                eventToPromise(c, 'ping'),
+                                eventToPromise(c, 'pong') ]))
+  })
+
+  it('should trigger a disconnect on ping ack timeouts', function () {
+    this.timeout(6000)
+    this.slow(4000)
+    let c
+    function connectionHook (client) { c = client }
+    server = new Server({port}, {connectionHook},
+                        {pingInterval: 1000, ackWaitTimeout: 1000})
+    client = new Client(url, {WebSocket})
+    return eventToPromise(client, 'connect')
+      .then(() => { client.handlers.ping = () => new Promise(() => {}) })
+      .then(() => eventToPromise(c, 'close'))
   })
 
   it('should not add disconnected clients', function () {
