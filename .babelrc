@@ -2,12 +2,10 @@
   "env": {
     "test": {
       "plugins": [
-        "transform-flow-strip-types",
         "istanbul"
       ]
     }
   },
-  "plugins": ["transform-flow-strip-types"],
   "presets": ["es2015"],
   "sourceMaps": "inline"
 }
