@@ -324,7 +324,7 @@ class Client extends EventEmitter {
         let fn = getOwnProp(this.handlers, message.name)
         if (fn) {
           attempt(() => fn.apply(null, message.args))
-            .then(result => this._send({id, result}))
+            .then((result = null) => this._send({id, result}))
             .catch(error => this._send({id, error: this.errorFormatter(error)}))
         } else {
           this._send({id, error: new NoProcedureError(message.name)})
