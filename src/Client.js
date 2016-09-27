@@ -4,11 +4,13 @@
 const EventEmitter = require('eventemitter3')
 const { assign, attempt, fromCallback, Promise } = require('./utils')
 
-const blacklist = [ 'close', 'open', 'error', 'retry' ]
+const blacklist = [ 'close', 'open', 'error', 'ping', 'retry' ]
 
 // utils
 
 const concat = [].concat.bind([])
+
+const emit = EventEmitter.prototype.emit
 
 function isBlacklistedEvent (name) {
   return blacklist.indexOf(name) >= 0
@@ -258,14 +260,14 @@ class Client extends EventEmitter {
      * Emits w3c onopen WebSocket events.
      * @event Client#open
      */
-    this.socket.onopen = this.emit.bind(this, 'open')
+    this.socket.onopen = emit.bind(this, 'open')
     /**
      * Emits w3c onerror WebSocket events. Does __NOT__ throw if there
      * are no listeners.
      * @event Client#error
      * @param {Error} error Error.
      */
-    this.socket.onerror = this.emit.bind(this, 'error')
+    this.socket.onerror = emit.bind(this, 'error')
     this.socket.onclose = this._onClose.bind(this)
     this.socket.onmessage = this._onMessage.bind(this)
   }
@@ -291,7 +293,7 @@ class Client extends EventEmitter {
      * @event Client#close
      * @param {CloseEvent} data Close event data.
      */
-    this.emit('close', ev)
+    emit.call(this, 'close', ev)
   }
 
   _makeMessage (name, args, needsAck) {
@@ -328,7 +330,7 @@ class Client extends EventEmitter {
           this._send({id, error: new NoProcedureError(message.name)})
         }
       } else {
-        this.emit.apply(this, concat(message.name, message.args))
+        emit.apply(this, concat(message.name, message.args))
       }
     } else {
       let ack = this.pendingAcks[message.id]
@@ -422,6 +424,13 @@ class Client extends EventEmitter {
     }
   }
 }
+
+/**
+ * Alias for {@link Client#send}.
+ * @method
+ * @name Client#emit
+ */
+Client.prototype.emit = Client.prototype.send
 
 Client.ConnectionError = ConnectionError
 Client.RPCError = RPCError
