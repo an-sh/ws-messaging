@@ -8,7 +8,7 @@
     "compile": "babel src --out-dir lib --no-comments",
     "flow": "flow; test $? -eq 0 -o $? -eq 2",
     "prebundle-client": "npm run compile",
-    "bundle-client": "browserify -g uglifyify lib/Client.js -o ws-messaging.min.js",
+    "bundle-client": "browserify -g uglifyify --standalone ws-messaging lib/Client.js -o ws-messaging.min.js",
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "generate-docs": "jsdoc --configure .jsdoc.json --verbose",
     "prepublish": "npm run bundle-client",
