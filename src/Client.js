@@ -190,6 +190,7 @@ const defaults = {
   encoder: JSON.stringify,
   errorFormatter: String,
   pingInterval: 10000,
+  pingTimeout: 5000,
   protocols: 'ws-messaging',
   receiveHook: null,
   skipValidation: false
@@ -276,9 +277,12 @@ class Client extends EventEmitter {
   }
 
   _ping () {
-    this.pingTimeout = setTimeout(() => {
+    this.pingTimeoutId = setTimeout(() => {
       emit.call(this, 'ping')
-      this.invoke('ping')
+      let { message, promise } =
+            this._makeMessage('ping', [], true, this.pingTimeout)
+      this._send(message)
+        .then(() => promise)
         .then(() => {
           emit.call(this, 'pong')
           this._ping()
@@ -294,7 +298,7 @@ class Client extends EventEmitter {
 
   _onClose (ev) {
     this.connected = false
-    clearTimeout(this.pingTimeout)
+    clearTimeout(this.pingTimeoutId)
     if (ev.code === 4003) { this.terminated = true }
     for (let id in this.pendingAcks) {
       /* istanbul ignore else */
@@ -312,12 +316,12 @@ class Client extends EventEmitter {
     emit.call(this, 'close', ev)
   }
 
-  _makeMessage (name, args, needsAck) {
+  _makeMessage (name, args, needsAck, ackTimeout = this.ackWaitTimeout) {
     let promise, message
     message = {name, args}
     if (needsAck) {
       let id = this.counter++
-      let ack = new Ack(id, this.ackWaitTimeout, () => delete this.pendingAcks[id])
+      let ack = new Ack(id, ackTimeout, () => delete this.pendingAcks[id])
       this.pendingAcks[id] = ack
       promise = ack.promise
       message.id = id
@@ -440,7 +444,7 @@ class Client extends EventEmitter {
    * @param {boolean} [terminate=true] Disable reconnect.
    */
   close (code = 1000, str, terminate = true) {
-    clearTimeout(this.pingTimeout)
+    clearTimeout(this.pingTimeoutId)
     if (!this.terminated) {
       this.terminated = terminate
       if (this._isOpen()) { this.socket.close(code, str) }
