@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/an-sh/ws-messaging/compare/v0.2.0...v0.3.0) (2016-09-28)
+
+
+### Bug Fixes
+
+* returning an empty result from RPC ([103d0e9](https://github.com/an-sh/ws-messaging/commit/103d0e9))
+* use standalone bundle ([c6fca77](https://github.com/an-sh/ws-messaging/commit/c6fca77))
+
+
+### Code Refactoring
+
+* allow reconnect on terminated clients ([ab0b806](https://github.com/an-sh/ws-messaging/commit/ab0b806))
+* rename option ([2d95d5e](https://github.com/an-sh/ws-messaging/commit/2d95d5e))
+* rename option ([b117cc4](https://github.com/an-sh/ws-messaging/commit/b117cc4))
+
+
+### Features
+
+* emit errors without throwing on 0 listeners ([7675db2](https://github.com/an-sh/ws-messaging/commit/7675db2))
+* send pings for network failures detection ([2c7ee8d](https://github.com/an-sh/ws-messaging/commit/2c7ee8d))
+* separate ping timeout option ([0ba3ef3](https://github.com/an-sh/ws-messaging/commit/0ba3ef3))
+* use emit as an alias for send ([a142bed](https://github.com/an-sh/ws-messaging/commit/a142bed))
+
+
+### BREAKING CHANGES
+
+* Server option is renamed to WebSocketServer.
+* terminated state now is not checked by the reconnect
+method.
+* rename ackWaitTimeout to ackTimeout.
+* emit method semantics changed.
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/an-sh/ws-messaging/compare/v0.1.2...v0.2.0) (2016-09-26)
 
