@@ -7,6 +7,9 @@
     "include": ["src", "README.md"],
     "includePattern": ".js$"
   },
+  "plugins": [
+    "plugins/markdown"
+  ],
   "templates": {
     "cleverLinks": true,
     "monospaceLinks": false,

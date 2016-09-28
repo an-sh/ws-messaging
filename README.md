@@ -24,7 +24,7 @@ and Web browsers with a Promises and EventEmitter based APIs.
 
 - Binary messages support via custom encoders/decoders.
 
-- Reasonable client size (14KB minified, including a Promise
+- Reasonable client size (15KB minified, including a Promise
   polyfill).
 
 ## Table of Contents
@@ -65,14 +65,13 @@ On a client:
 const Client = require('ws-messaging/client')
 
 const url = `ws://localhost:${port}`
-
 const auth = { /* will be authData in connectionHook */ }
 
-let client = new Client(url, {auth})
+let client = new Client(url, auth)
 
-client.on('someEvent', () => { /* do smth */ })
+client.on('someEvent', (...data) => { /* do smth */ })
 
-client.register('someMethod', () => { /* do smth, return a promise */ })
+client.register('someMethod', (..args) => { /* do smth, return a promise */ })
 
 client.on('connection', () => {
   /* now this client can send messages */
@@ -83,9 +82,10 @@ client.on('connection', () => {
     .catch(error => { /* do smth */ })
 })
 
-client.on('close', () => {
-  /* close, but a client is able to try to reconnect */
+client.on('close', ev => {
+  /* close */
   if (!client.terminated) {
+    /* but a client is able to try to reconnect */
     setTimeout(client.reconnect.bind(client), 2000)
   }
 })

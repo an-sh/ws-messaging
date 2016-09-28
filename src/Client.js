@@ -152,9 +152,8 @@ class Ack {
  */
 
 /**
- * Receive hook is run when a client receives a message via a
- * websocket. May also return promises for an asynchronous
- * execution.
+ * Receive hook is run when a client receives a valid message via a
+ * websocket. May also return promises for an asynchronous execution.
  *
  * @callback Client.ReceiveHook
  * @param {Client.Message} message Message.
@@ -165,16 +164,18 @@ class Ack {
 /**
  * @typedef {Object} Client.SocketOptions
  *
- * @property {number} [ackWaitTimeout=20000] RPC ack wait timeout.
+ * @property {number} [ackTimeout=20000] Result wait timeout for
+ * {@link Client#invoke} in ms.
  * @property {Object} [auth={}] Auth data.
  * @property {string} [binaryType='arraybuffer'] W3C WebSocket
  * binary data type.
  * @property {Client.Decoder} [decoder=JSON.parse] Messages decoder.
- * @property {Client.Encoder} [decoder=JSON.stringify] Messages
- * decoder.
+ * @property {Client.Encoder} [encoder=JSON.stringify] Messages
+ * encoder.
  * @property {function} [errorFormatter=String] Converter for JS
  * errors to some network format.
- * @property {number} [pingInterval=10000] Ping interval.
+ * @property {number} [pingInterval=10000] Ping interval in ms.
+ * @property {number} [pingTimeout=5000] Ping timeout in ms.
  * @property {string|Array<string>} [protocols='ws-messaging']
  * WebSocket protocols.
  * @property {Client.ReceiveHook} [receiveHook] Receive hook.
@@ -371,8 +372,9 @@ class Client extends EventEmitter {
 
   /**
    * Send an event, no reply. Use {@link on} or {@link once} methods
-   * to listen events on a recipient side. Reserved event names (must
-   * not be used): connect, close, open, error, ping, pong, retry.
+   * to listen events on a recipient side. Reserved event names
+   * (__MUST NOT__ be used): `connect`, `close`, `open`, `error`,
+   * `ping`, `pong`, `retry`.
    * @param {string} event Event name.
    * @param {*} [args] Arguments.
    * @returns {Promise<undefined>} Resolves when a data has been sent.
@@ -384,8 +386,9 @@ class Client extends EventEmitter {
 
   /**
    * Invoke an RPC procedure. Use {@link Client#register} method to
-   * assign an RPC method handler. Reserved procedure names (must not
-   * be used): connect, close, open, error, ping, pong, retry.
+   * assign an RPC method handler. Reserved procedure names (__MUST
+   * NOT__ be used): `connect`, `close`, `open`, `error`, `ping`,
+   * `pong`, `retry`.
    * @param {string} name Procedure name.
    * @param {*} [args] Arguments.
    * @returns {Promise<Object>} Resolves or rejects when a reply is
