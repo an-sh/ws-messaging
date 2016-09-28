@@ -456,7 +456,7 @@ describe('ws-messaging errors', function () {
       client.register('someProcedure', () => new Promise(() => {}))
     }
     server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, ackWaitTimeout: 10})
+    client = new Client(url, {WebSocket, ackTimeout: 10})
     return eventToPromise(client, 'connect')
       .then(() => client.invoke('someProcedure'))
       .then(notReachable)

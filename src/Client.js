@@ -183,7 +183,7 @@ class Ack {
  */
 
 const defaults = {
-  ackWaitTimeout: 20000,
+  ackTimeout: 20000,
   auth: {},
   binaryType: 'arraybuffer',
   decoder: JSON.parse,
@@ -316,7 +316,7 @@ class Client extends EventEmitter {
     emit.call(this, 'close', ev)
   }
 
-  _makeMessage (name, args, needsAck, ackTimeout = this.ackWaitTimeout) {
+  _makeMessage (name, args, needsAck, ackTimeout = this.ackTimeout) {
     let promise, message
     message = {name, args}
     if (needsAck) {
