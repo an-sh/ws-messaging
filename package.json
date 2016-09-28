@@ -1,6 +1,6 @@
 {
   "name": "ws-messaging",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "A minimalistic abstraction layer for websockets.",
   "main": "index.js",
   "private": false,
@@ -15,6 +15,7 @@
     "test": "cross-env NODE_ENV=test nyc mocha"
   },
   "keywords": [
+    "websocket",
     "websockets",
     "messaging",
     "api",
