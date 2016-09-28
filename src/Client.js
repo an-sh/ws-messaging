@@ -417,7 +417,7 @@ class Client extends EventEmitter {
    * Reconnect. Client-side only.
    */
   reconnect () {
-    if (this._isOpen() || this.terminated) {
+    if (this._isOpen()) {
       return
     } else if (this.WebSocket && this.url) {
       /**
