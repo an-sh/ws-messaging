@@ -10,7 +10,7 @@ const { CLOSE_FORBIDDEN } = require('./constants')
 const { assign, attempt, fromCallback, toEmit } = require('./utils')
 
 const defaults = {
-  Server: WebSocketServer,
+  WebSocketServer,
   connectionHook: null,
   authTimeout: 20000
 }
@@ -34,13 +34,13 @@ const defaults = {
  *
  * @property {Server.ConnectionHook} [connectionHook] Connection
  * hook.
- * @property {Object} [Server] Alternative constructor for wss
+ * @property {Object} [WebSocketServer] Alternative constructor for ws
  * server.
  * @property {number} [authTimeout=20000] Auth message wait timeout in
  * ms.
  */
 /* ::
-type ServerOptions = { Server?: constructor,
+type ServerOptions = { WebSocketServer?: constructor,
                        connectionHook?: ConnectionHook,
                        authTimeout?: number
                      }
@@ -57,7 +57,7 @@ type ServerOptions = { Server?: constructor,
 class Server extends EventEmitter {
   /* ::
   authTimeout: number
-  Server: constructor
+  WebSocketServer: constructor
   clients: Map<string, Object>
   connectionHook: ConnectionHook
   socketOptions: Object
@@ -84,10 +84,10 @@ class Server extends EventEmitter {
 
   _setEvents (wssOptions /* : Object */) /* : void */ {
     /**
-     * Emits ready event.
+     * Emits a ready event.
      * @event Server#ready
      */
-    this.wss = new this.Server(wssOptions, toEmit(this))
+    this.wss = new this.WebSocketServer(wssOptions, toEmit(this))
     /**
      * Emits wss error events. Does not throw if there are no
      * listeners.
