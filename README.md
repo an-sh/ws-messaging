@@ -12,7 +12,7 @@ and Web browsers with a Promises and EventEmitter based APIs.
 
 ### Features
 
-- Send notifications via an EventEmitter-like API.
+- Send and receive notifications (events) via an EventEmitter API.
 
 - Request-reply API using promises (works in both directions, without
   any connection blocking during processing).
@@ -20,12 +20,12 @@ and Web browsers with a Promises and EventEmitter based APIs.
 - Built-in auth via WebSocket messages exchange (no more query
   strings).
 
-- Reconnection method is provided.
+- Auto reconnection is provided.
 
 - Binary messages support via custom encoders/decoders.
 
-- Reasonable client size (15KB minified, including a Promise
-  polyfill).
+- Reasonable client size (also includes a Promise polyfill): around
+  16KB minified, 5KB gziped.
 
 ## Table of Contents
 
@@ -80,14 +80,6 @@ client.on('connection', () => {
   client.invoke('myMethod', ...someArgs)
     .then(result => { /* do smth */ })
     .catch(error => { /* do smth */ })
-})
-
-client.on('close', ev => {
-  /* close */
-  if (!client.terminated) {
-    /* but a client is able to try to reconnect */
-    setTimeout(client.reconnect.bind(client), 2000)
-  }
 })
 ```
 

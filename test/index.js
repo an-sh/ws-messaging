@@ -30,7 +30,7 @@ afterEach('cleanup', function () {
   if (GlobalWebSocket) { global.Websocket = GlobalWebSocket }
   let promise
   if (server) {
-    promise = server.close()
+    promise = server.close(4003)
     server = null
   }
   if (client) {
@@ -225,7 +225,7 @@ describe('ws-messaging', function () {
     global.WebSocket = WebSocket
     client = new Client(url)
     return eventToPromise(client, 'connect').then(() => {
-      c.close()
+      c.close(4003)
       return eventToPromise(client, 'close').then(() => client.close())
     })
   })
@@ -251,7 +251,7 @@ describe('ws-messaging', function () {
       }
     }
     server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    client = new Client(url, {WebSocket, autoReconnect: false})
     return eventToPromise(client, 'close').then(() => {
       client.reconnect()
       return eventToPromise(client, 'connect')
@@ -279,7 +279,7 @@ describe('ws-messaging', function () {
     function connectionHook (client) { c = client }
     server = new Server({port}, {connectionHook},
                         {pingInterval: 1000, pingTimeout: 1000})
-    client = new Client(url, {WebSocket})
+    client = new Client(url, {WebSocket, autoReconnect: false})
     return eventToPromise(client, 'connect')
       .then(() => { client.handlers.ping = () => new Promise(() => {}) })
       .then(() => eventToPromise(c, 'close'))
@@ -297,6 +297,24 @@ describe('ws-messaging', function () {
       .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
       .then(() => client.close())
       .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
+  })
+
+  it('should be able to auto reconnect', function () {
+    this.timeout(6000)
+    this.slow(4000)
+    let id
+    function connectionHook (client) {
+      if (!id) {
+        id = client.id
+        setTimeout(() => client.close(), 1000)
+      }
+    }
+    server = new Server({port}, {connectionHook})
+    client = new Client(url, {WebSocket})
+    return eventToPromise(client, 'close').then(() => {
+      return Promise.all([eventToPromise(client, 'connect'),
+                          eventToPromise(client, 'retry')])
+    })
   })
 })
 
