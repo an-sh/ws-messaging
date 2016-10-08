@@ -315,13 +315,43 @@ class Client extends EventEmitter {
     if (this.attempt >= retries) { return }
     let rand = 1 + (randomize ? Math.random() : 0)
     let timeout = Math.min(rand * minTimeout * Math.pow(factor, this.attempt), maxTimeout)
-    this.reconnectTimeout = setTimeout(this.reconnect.bind(this), timeout)
+    this.reconnectTimeoutId = setTimeout(this.reconnect.bind(this), timeout)
     this.attempt++
+  }
+
+  _open () {
+    /**
+     * Underlying websocket.
+     * @member {WebSocket}
+     * @readonly
+     */
+    this.socket = new this.WebSocket(this.url, this.protocols)
+    if (this.w3c) { this.socket.binaryType = this.binaryType }
+    this.connectHandler = () => {
+      this.connected = true
+      this.attempt = 0
+      clearTimeout(this.reconnectTimeoutId)
+      clearTimeout(this.authTimeoutId)
+      this._ping()
+    }
+    this.openHandler = () => {
+      this._send(this.auth)
+      this.authTimeoutId = setTimeout(
+        this.close.bind(this, 4008, 'Auth timeout', false),
+        this.ackTimeout)
+      this.once('connect', this.connectHandler)
+    }
+    this.once('open', this.openHandler)
+    this._setEvents()
+    if (this.attempt > 0) { emit.call(this, 'retry', this.attempt - 1) }
   }
 
   _onClose (ev) {
     this.connected = false
     clearTimeout(this.pingTimeoutId)
+    clearTimeout(this.authTimeoutId)
+    this.off(this.connectHandler)
+    this.off(this.openHandler)
     if (ev.code === 4003 || !this.url) { this.terminated = true }
     for (let id in this.pendingAcks) {
       /* istanbul ignore else */
@@ -443,26 +473,9 @@ class Client extends EventEmitter {
     if (this._isOpen()) {
       return
     } else if (this.WebSocket && this.url) {
-      /**
-       * Underlying websocket.
-       * @member {WebSocket}
-       * @readonly
-       */
-      this.socket = new this.WebSocket(this.url, this.protocols)
-      if (this.w3c) { this.socket.binaryType = this.binaryType }
-      this.once('open', () => {
-        this._send(this.auth)
-        this.once('connect', () => {
-          this.attempt = 0
-          clearTimeout(this.reconnectTimeout)
-          this.connected = true
-          this._ping()
-        })
-      })
-      this._setEvents()
-      if (this.attempt > 0) { emit.call(this, 'retry', this.attempt - 1) }
+      this._open()
     } else {
-      throw new Error('WebSocket or url options are not provided')
+      throw new Error('Malformed configuration options')
     }
   }
 
@@ -474,7 +487,6 @@ class Client extends EventEmitter {
    */
   close (code = 1000, str, terminate = true) {
     clearTimeout(this.pingTimeoutId)
-    clearTimeout(this.reconnectTimeout)
     if (!this.terminated) {
       this.terminated = terminate
       if (this._isOpen()) { this.socket.close(code, str) }

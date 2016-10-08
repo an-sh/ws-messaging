@@ -230,13 +230,26 @@ describe('ws-messaging', function () {
     })
   })
 
-  it('should close sockets on an auth timeout', function () {
+  it('should close server sockets on an auth timeout', function () {
     this.timeout(4000)
     this.slow(2000)
     server = new Server({port}, {authTimeout: 1000})
     let socket = new WebSocket(url)
     return eventToPromise(socket, 'close').then(ev => {
       expect(ev.code).eql(4003)
+    })
+  })
+
+  it('should close clients on an auth timeout', function () {
+    this.timeout(4000)
+    this.slow(2000)
+    function connectionHook (client) {
+      return new Promise(() => {})
+    }
+    server = new Server({port}, {connectionHook})
+    client = new Client(url, {WebSocket, ackTimeout: 1000, autoReconnect: false})
+    return eventToPromise(client, 'close').then(ev => {
+      expect(ev.code).eql(4008)
     })
   })
 
