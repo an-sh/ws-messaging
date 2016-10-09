@@ -350,8 +350,8 @@ class Client extends EventEmitter {
     this.connected = false
     clearTimeout(this.pingTimeoutId)
     clearTimeout(this.authTimeoutId)
-    this.off(this.connectHandler)
-    this.off(this.openHandler)
+    this.off('connect', this.connectHandler)
+    this.off('open', this.openHandler)
     if (ev.code === 4003 || !this.url) { this.terminated = true }
     for (let id in this.pendingAcks) {
       /* istanbul ignore else */
@@ -470,6 +470,7 @@ class Client extends EventEmitter {
    * Reconnect. Client-side only.
    */
   reconnect () {
+    this.terminated = false
     if (this._isOpen()) {
       return
     } else if (this.WebSocket && this.url) {
