@@ -17,8 +17,9 @@ const defaults = {
 
 /**
  * Connection hook is run when a client connects to a server. The
- * result is used as an auth reply data. May also return promises
- * for an asynchronous execution.
+ * result is used as an auth reply data. May also return promises for
+ * an asynchronous execution. If the promise is rejected or an error
+ * is thrown, then auth has failed and the socket will be closed.
  *
  * @callback Server.ConnectionHook
  *
@@ -67,7 +68,7 @@ class Server extends EventEmitter {
   /**
    * Starts a server.
    *
-   * @param {Object} wssOptions Options that are passed to wss server.
+   * @param {Object} wssOptions Options that are passed to ws server.
    * @param {Server.ServerOptions} [serverOptions] Server options.
    * @param {Client.SocketOptions} [socketOptions] Socket options.
    */
@@ -99,8 +100,8 @@ class Server extends EventEmitter {
   }
 
   _onConnection (socket /* : Object & EventEmitter */) /* : void */ {
-    let timeout =
-        setTimeout(socket.close.bind(socket, CLOSE_FORBIDDEN), this.authTimeout)
+    let timeout = setTimeout(
+      socket.close.bind(socket, CLOSE_FORBIDDEN), this.authTimeout)
     socket.once('message', data => this._addClient(socket, data, timeout))
   }
 
@@ -111,6 +112,7 @@ class Server extends EventEmitter {
     clearTimeout(timeout)
     uid(18).then(id => {
       client = new Client(null, assign({socket, id}, this.socketOptions))
+      client.autoReconnect = false
       if (this.connectionHook) {
         return attempt(() => client.decoder(data))
           .then(authData => this.connectionHook(client, authData))
