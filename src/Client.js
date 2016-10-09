@@ -162,11 +162,24 @@ class Ack {
  */
 
 /**
+ * @typedef {Object} Client.RetryConfig
+ *
+ * @property {number} [factor=2]
+ * @property {number} [maxTimeout=Infinity]
+ * @property {number} [minTimeout=1000]
+ * @property {boolean} [randomize=true]
+ * @property {number} [retries=10]
+ */
+
+/**
  * @typedef {Object} Client.SocketOptions
  *
  * @property {number} [ackTimeout=20000] Result wait timeout for
  * {@link Client#invoke} in ms.
  * @property {Object} [auth={}] Auth data.
+ * @property {boolean} [autoReconnect=true] Enable auto reconnect.
+ * @property {Client.RetryConfig} [autoReconnectOptions] Auto
+ * reconnect config.
  * @property {string} [binaryType='arraybuffer'] W3C WebSocket
  * binary data type.
  * @property {Client.Decoder} [decoder=JSON.parse] Messages decoder.
@@ -220,7 +233,7 @@ class Client extends EventEmitter {
    * Creates a client.
    *
    * @param {string} url WebSocket connection url.
-   * @param {Client.SocketOptions} options Socket options.
+   * @param {Client.SocketOptions} [options] Socket options.
    */
   constructor (url, options = {}) {
     super()
@@ -343,7 +356,14 @@ class Client extends EventEmitter {
     }
     this.once('open', this.openHandler)
     this._setEvents()
-    if (this.attempt > 0) { emit.call(this, 'retry', this.attempt - 1) }
+    if (this.attempt > 0) {
+      /**
+       * Emits retry events when auto reconnecting.
+       * @event Client#retry
+       * @param {number} attempt Attempt number starting from `0`.
+       */
+      emit.call(this, 'retry', this.attempt - 1)
+    }
   }
 
   _onClose (ev) {
