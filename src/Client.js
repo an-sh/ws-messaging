@@ -325,7 +325,7 @@ class Client extends EventEmitter {
 
   _reconnect () {
     let { factor, maxTimeout, minTimeout, randomize, retries } = this.retryConfig
-    if (this.attempt >= retries) { return }
+    if (this.attempt >= retries || this.terminated) { return }
     let rand = 1 + (randomize ? Math.random() : 0)
     let timeout = Math.min(rand * minTimeout * Math.pow(factor, this.attempt), maxTimeout)
     this.reconnectTimeoutId = setTimeout(this.reconnect.bind(this), timeout)
@@ -333,6 +333,7 @@ class Client extends EventEmitter {
   }
 
   _open () {
+    clearTimeout(this.reconnectTimeoutId)
     /**
      * Underlying websocket.
      * @member {WebSocket}
@@ -343,7 +344,6 @@ class Client extends EventEmitter {
     this.connectHandler = () => {
       this.connected = true
       this.attempt = 0
-      clearTimeout(this.reconnectTimeoutId)
       clearTimeout(this.authTimeoutId)
       this._ping()
     }
@@ -370,6 +370,7 @@ class Client extends EventEmitter {
     this.connected = false
     clearTimeout(this.pingTimeoutId)
     clearTimeout(this.authTimeoutId)
+    clearTimeout(this.reconnectTimeoutId)
     this.off('connect', this.connectHandler)
     this.off('open', this.openHandler)
     if (ev.code === 4003 || !this.url) { this.terminated = true }
@@ -507,7 +508,6 @@ class Client extends EventEmitter {
    * @param {boolean} [terminate=true] Disable reconnect.
    */
   close (code = 1000, str, terminate = true) {
-    clearTimeout(this.pingTimeoutId)
     if (!this.terminated) {
       this.terminated = terminate
       if (this._isOpen()) { this.socket.close(code, str) }
