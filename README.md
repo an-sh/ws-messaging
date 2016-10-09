@@ -64,14 +64,14 @@ On a client:
 ```javascript
 const Client = require('ws-messaging/client')
 
-const url = `ws://localhost:${port}`
+const url = `ws://${HOST}:${PORT}`
 const auth = { /* will be authData in connectionHook */ }
 
 let client = new Client(url, auth)
 
 client.on('someEvent', (...data) => { /* do smth */ })
 
-client.register('someMethod', (..args) => { /* do smth, return a promise */ })
+client.register('someMethod', (...args) => { /* do smth, return a promise */ })
 
 client.on('connection', () => {
   /* now this client can send messages */
