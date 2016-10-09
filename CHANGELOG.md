@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/an-sh/ws-messaging/compare/v0.3.0...v0.4.0) (2016-10-09)
+
+
+### Features
+
+* auto reconnect ([9a36be2](https://github.com/an-sh/ws-messaging/commit/9a36be2))
+* handle auth timeout on a client-side ([7645801](https://github.com/an-sh/ws-messaging/commit/7645801))
+
+
+### BREAKING CHANGES
+
+* auto reconnect is enabled by default
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/an-sh/ws-messaging/compare/v0.2.0...v0.3.0) (2016-09-28)
 
