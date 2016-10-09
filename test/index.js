@@ -271,6 +271,20 @@ describe('ws-messaging', function () {
     })
   })
 
+  it('should honour retries option', function () {
+    this.timeout(4000)
+    this.slow(2000)
+    function connectionHook (client) {
+      client.close()
+    }
+    server = new Server({port}, {connectionHook})
+    client = new Client(url, {WebSocket, autoReconnectOptions: {retries: 0}})
+    return eventToPromise(client, 'close').then(() => {
+      eventToPromise(client, 'connect').then(notReachable)
+      return new Promise(resolve => setTimeout(resolve, 1000))
+    })
+  })
+
   it('should send pings from both sides', function () {
     this.timeout(4000)
     this.slow(2000)
