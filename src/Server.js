@@ -113,6 +113,8 @@ class Server extends EventEmitter {
     uid(18).then(id => {
       client = new Client(null, assign({socket, id}, this.socketOptions))
       client.autoReconnect = false
+      this.clients.set(client.id, client)
+      client.on('close', () => this._removeClient(client.id))
       if (this.connectionHook) {
         return attempt(() => client.decoder(data))
           .then(authData => this.connectionHook(client, authData))
@@ -121,8 +123,6 @@ class Server extends EventEmitter {
       if (client._isOpen()) {
         client._setEvents()
         client.connected = true
-        this.clients.set(client.id, client)
-        client.on('close', () => this._removeClient(client.id))
         client.send('connect', authReplyData)
         client._ping()
       }
