@@ -73,7 +73,7 @@ client.on('someEvent', (...data) => { /* do smth */ })
 
 client.register('someMethod', (...args) => { /* do smth, return a promise */ })
 
-client.on('connection', () => {
+client.on('connect', () => {
   /* now this client can send messages */
   client.send('myEvent', ...someData)
   /* or use request-reply (RPC) API */
