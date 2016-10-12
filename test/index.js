@@ -184,10 +184,7 @@ describe('ws-messaging', function () {
     return eventToPromise(client, 'connect')
       .then(() => client.invoke('someProcedure'))
       .then(notReachable)
-      .catch(err => {
-        expect(err.name).eql('RPCError')
-        expect(err.errorData).eql(error.toString())
-      })
+      .catch(err => expect(err).a.string)
   })
 
   it('should return NoProcedureError errors', function () {
@@ -196,7 +193,7 @@ describe('ws-messaging', function () {
     return eventToPromise(client, 'connect')
       .then(() => client.invoke('someProcedure'))
       .then(notReachable)
-      .catch(err => expect(err.errorData.name).eql('NoProcedureError'))
+      .catch(err => expect(err).a.string)
   })
 
   it('should send and receive binary messages', function () {

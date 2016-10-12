@@ -29,33 +29,19 @@ function ConnectionError (id) {
 
 ConnectionError.prototype = Object.create(Error.prototype)
 
-function NoProcedureError (procedure) {
-  this.name = 'NoProcedureError'
-  this.procedure = procedure
-}
-
-NoProcedureError.prototype = Object.create(Error.prototype)
-
-function ParsingError (errorData) {
-  this.name = 'ParsingError'
-  this.errorData = errorData
-}
-
-ParsingError.prototype = Object.create(Error.prototype)
-
-function RPCError (errorData) {
-  this.name = 'RPCError'
-  this.errorData = errorData
-}
-
-RPCError.prototype = Object.create(Error.prototype)
-
 function TimeoutError (id) {
   this.name = 'TimeoutError'
   this.id = id
 }
 
 TimeoutError.prototype = Object.create(Error.prototype)
+
+function NoProcedureError (procedure) {
+  this.name = 'NoProcedureError'
+  this.procedure = procedure
+}
+
+NoProcedureError.prototype = Object.create(Error.prototype)
 
 // validation
 
@@ -110,8 +96,7 @@ class Ack {
     clearTimeout(this.timeout)
     this.cb()
     if (message.hasOwnProperty('error')) {
-      let error = new RPCError(message.error)
-      this.reject(error)
+      this.reject(message.error)
     } else {
       this.resolve(message.result)
     }
@@ -280,10 +265,7 @@ class Client extends EventEmitter {
       .then(() => { if (!this.skipValidation) { validate(message) } })
       .then(() => { if (this.receiveHook) { this.receiveHook(message) } })
       .then(() => this._dispatch(message))
-      .catch(error => {
-        let data = new ParsingError(this.errorFormatter(error))
-        this.send('ParsingError', data)
-      })
+      .catch(error => this.send('ParsingError', this.errorFormatter(error)))
   }
 
   _setEvents () {
@@ -306,14 +288,11 @@ class Client extends EventEmitter {
   _ping () {
     this.pingTimeoutId = setTimeout(() => {
       emit.call(this, 'ping')
-      let { message, promise } =
-            this._makeMessage('ping', [], true, this.pingTimeout)
-      this._send(message)
-        .then(() => promise)
-        .then(() => {
-          emit.call(this, 'pong')
-          this._ping()
-        })
+      let timeout = this.pingTimeout
+      let { message, promise } = this._makeMessage('ping', [], true, timeout)
+      this._send(message).then(() => promise)
+        .then(() => emit.call(this, 'pong'))
+        .then(() => this._ping())
         .catch(() => this.close(4008, 'Ping timeout', false))
     }, this.pingInterval)
   }
@@ -422,7 +401,8 @@ class Client extends EventEmitter {
             .then((result = null) => this._send({id, result}))
             .catch(error => this._send({id, error: this.errorFormatter(error)}))
         } else {
-          this._send({id, error: new NoProcedureError(message.name)})
+          let error = this.errorFormatter(new NoProcedureError(message.name))
+          this._send({id, error})
         }
       } else {
         emit.apply(this, concat(message.name, message.args))
@@ -523,7 +503,7 @@ class Client extends EventEmitter {
 Client.prototype.emit = Client.prototype.send
 
 Client.ConnectionError = ConnectionError
-Client.RPCError = RPCError
+Client.NoProcedureError = NoProcedureError
 Client.TimeoutError = TimeoutError
 
 module.exports = Client
