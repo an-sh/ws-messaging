@@ -348,7 +348,7 @@ describe('ws-messaging validation', function () {
     client = new Client(url, {WebSocket})
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send('arbitraryData')
-      return eventToPromise(client, 'ParsingError')
+      return eventToPromise(client, 'preprocessingError')
     })
   })
 
@@ -358,7 +358,7 @@ describe('ws-messaging validation', function () {
     let msg = { name: 'name', args: '' }
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(JSON.stringify(msg))
-      return eventToPromise(client, 'ParsingError')
+      return eventToPromise(client, 'preprocessingError')
     })
   })
 
@@ -368,7 +368,7 @@ describe('ws-messaging validation', function () {
     let msg = { name: 'name', args: [], data: 'data' }
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(JSON.stringify(msg))
-      return eventToPromise(client, 'ParsingError')
+      return eventToPromise(client, 'preprocessingError')
     })
   })
 
@@ -378,7 +378,7 @@ describe('ws-messaging validation', function () {
     let msg = { id: -1 }
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(JSON.stringify(msg))
-      return eventToPromise(client, 'ParsingError')
+      return eventToPromise(client, 'preprocessingError')
     })
   })
 
@@ -388,7 +388,7 @@ describe('ws-messaging validation', function () {
     let msg = { id: 1, data: 'data' }
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(JSON.stringify(msg))
-      return eventToPromise(client, 'ParsingError')
+      return eventToPromise(client, 'preprocessingError')
     })
   })
 
@@ -400,7 +400,7 @@ describe('ws-messaging validation', function () {
     let msg = 'data'
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(encoder(msg))
-      return eventToPromise(client, 'ParsingError')
+      return eventToPromise(client, 'preprocessingError')
     })
   })
 

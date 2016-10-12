@@ -265,7 +265,7 @@ class Client extends EventEmitter {
       .then(() => { if (!this.skipValidation) { validate(message) } })
       .then(() => { if (this.receiveHook) { this.receiveHook(message) } })
       .then(() => this._dispatch(message))
-      .catch(error => this.send('ParsingError', this.errorFormatter(error)))
+      .catch(error => this.send('preprocessingError', this.errorFormatter(error)))
   }
 
   _setEvents () {
