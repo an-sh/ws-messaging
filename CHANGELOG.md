@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/an-sh/ws-messaging/compare/v0.4.1...v0.5.0) (2016-10-12)
+
+
+### Bug Fixes
+
+* ensure usage of formatter for all errors ([bc2dfad](https://github.com/an-sh/ws-messaging/commit/bc2dfad))
+* make getClient to work inside onConnect ([1121efa](https://github.com/an-sh/ws-messaging/commit/1121efa))
+
+
+### Code Refactoring
+
+* rename parsing error ([ebfa845](https://github.com/an-sh/ws-messaging/commit/ebfa845))
+
+
+### BREAKING CHANGES
+
+* Rename ParsingError to preprocessingError.
+* Error formatter is used on all errors, ParsingError and
+RPCError wrappers have been removed.
+
+
+
 <a name="0.4.1"></a>
 ## [0.4.1](https://github.com/an-sh/ws-messaging/compare/v0.4.0...v0.4.1) (2016-10-09)
 
