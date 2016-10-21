@@ -1,6 +1,6 @@
 {
   "name": "ws-messaging",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "A minimalistic abstraction layer for websockets.",
   "main": "index.js",
   "private": false,
