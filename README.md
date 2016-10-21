@@ -40,7 +40,7 @@ and Web browsers with a Promises and EventEmitter based APIs.
 ## Background
 
 Read this
-[article](https://medium.com/@an_sh_1/https://medium.com/@an_sh_1/a-better-websocket-api-for-web-browsers-and-node-js-ws-messaging-6f7826242932)
+[article](https://medium.com/@an_sh_1/a-better-websocket-api-for-web-browsers-and-node-js-ws-messaging-6f7826242932)
 for more background information.
 
 
