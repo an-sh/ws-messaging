@@ -86,12 +86,14 @@ class Server extends EventEmitter {
   _setEvents (wssOptions /* : Object */) /* : void */ {
     /**
      * Emits a ready event.
+     * @private
      * @event Server#ready
      */
     this.wss = new this.WebSocketServer(wssOptions, toEmit(this))
     /**
      * Emits wss error events. Does not throw if there are no
      * listeners.
+     * @private
      * @event Server#error
      * @param {Error} error Error.
      */

@@ -258,6 +258,11 @@ class Client extends EventEmitter {
     this.reconnect()
   }
 
+  /**
+   * Emitted when the other side failed to decode a websocket message.
+   * @event Client#preprocessingError
+   * @param {Object} error Converted error.
+   */
   _onMessage (data) {
     let message
     attempt(() => this.decoder(data.data))
