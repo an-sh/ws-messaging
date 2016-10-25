@@ -179,6 +179,12 @@ class Ack {
  * @property {Client.ReceiveHook} [receiveHook] Receive hook.
  * @property {boolean} [skipValidation=false] Skips build-in
  * messages validation.
+ * @property {Object} [WebSocket=undefined] Alternative websocket
+ * constructor, if it is undefined then a global WebSocket is used.
+ * @property {boolean} [w3c=undefined] If WebSocket is using a w3c
+ * send API, or a ws one (from Node.js server implementation with a
+ * callback). By default if a global value is used, then it is `true`
+ * and `false otherwise.
  */
 
 const retryConfig = {
@@ -202,7 +208,9 @@ const defaults = {
   pingTimeout: 5000,
   protocols: 'ws-messaging',
   receiveHook: null,
-  skipValidation: false
+  skipValidation: false,
+  WebSocket: undefined,
+  w3c: undefined
 }
 
 /**
@@ -234,7 +242,7 @@ class Client extends EventEmitter {
     assign(this.retryConfig, retryConfig, options.autoReconnectOptions)
     if (!this.WebSocket) {
       this.WebSocket = WebSocket
-      this.w3c = true
+      this.w3c = this.w3c === undefined ? true : this.w3c
     }
     /**
      * If true, then a client is connected.
