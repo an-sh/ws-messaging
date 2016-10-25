@@ -12,6 +12,7 @@
     "coverage": "nyc report --reporter=text-lcov > coverage.lcov && codecov",
     "generate-docs": "jsdoc --configure .jsdoc.json --verbose",
     "prepublish": "npm run bundle-client",
+    "pretest": "npm run compile",
     "test": "cross-env NODE_ENV=test nyc mocha"
   },
   "keywords": [
