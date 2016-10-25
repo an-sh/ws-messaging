@@ -32,20 +32,9 @@ function fromCallback (fn) {
   })
 }
 
-function toEmit (emitter) {
-  return error => {
-    if (error) {
-      emitter.emit('error', error)
-    } else {
-      emitter.emit('ready')
-    }
-  }
-}
-
 module.exports = {
   assign,
   attempt,
   fromCallback,
-  toEmit,
   Promise
 }

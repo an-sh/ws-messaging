@@ -7,7 +7,7 @@ const WebSocket = require('ws')
 const WebSocketServer = require('ws').Server
 const uid = require('uid-safe')
 const { CLOSE_FORBIDDEN } = require('./constants')
-const { assign, attempt, fromCallback, toEmit } = require('./utils')
+const { assign, attempt, fromCallback } = require('./utils')
 
 const defaults = {
   WebSocketServer,
@@ -89,7 +89,9 @@ class Server extends EventEmitter {
      * @private
      * @event Server#ready
      */
-    this.wss = new this.WebSocketServer(wssOptions, toEmit(this))
+    this.wss = new this.WebSocketServer(wssOptions, (error) => {
+      error ? this.emit('error', error) : this.emit('ready')
+    })
     /**
      * Emits wss error events. Does not throw if there are no
      * listeners.

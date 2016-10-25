@@ -521,20 +521,10 @@ describe('ws-messaging errors', function () {
       .then(notReachable)
       .catch(err => expect(err).instanceof(Client.ConnectionError))
   })
-})
 
-describe('ws-messaging utils', function () {
-  it('should reject promise on error', function () {
+  it('should reject promises on errors', function () {
     return utils.fromCallback(cb => cb(new Error()))
       .then(notReachable)
       .catch(() => {})
-  })
-
-  it('should emit errors', function () {
-    let ee = new EventEmitter()
-    let fn = utils.toEmit(ee)
-    let p = eventToPromise(ee, 'error')
-    fn(new Error())
-    return p
   })
 })
