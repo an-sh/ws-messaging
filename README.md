@@ -109,7 +109,7 @@ documentation is available online.
 
 This section describes what data is actually passed to an encoder.
 
-There are only two type of messages. The first one is for normal
+There are only two types of messages. The first one is for normal
 messages:
 
 ```javascript
