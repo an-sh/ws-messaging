@@ -139,7 +139,7 @@ Either a `result` or an `error` field is included. Note that an
 
 All incoming data must be validated on a server side, including errors
 that are passed to a catch callback. By default only the
-[network format](network-format-description) itself is
+[network format](#network-format-description) itself is
 validated. Validation can be made by a custom decoder (useful when a
 decoder is already using some scheme) or via a `receiveHook`, or
 inside a handler itself (useful for registered procedures). When
