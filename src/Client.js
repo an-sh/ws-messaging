@@ -266,11 +266,6 @@ class Client extends EventEmitter {
     this.reconnect()
   }
 
-  /**
-   * Emitted when the other side failed to decode a websocket message.
-   * @event Client#preprocessingError
-   * @param {Object} error Converted error.
-   */
   _onMessage (data) {
     let message
     attempt(() => this.decoder(data.data))
@@ -278,6 +273,13 @@ class Client extends EventEmitter {
       .then(() => { if (!this.skipValidation) { validate(message) } })
       .then(() => { if (this.receiveHook) { this.receiveHook(message) } })
       .then(() => this._dispatch(message))
+    /**
+     * Emitted when the other side failed to decode or validate a
+     * websocket message, namely an error is occurred inside either
+     * `decoder` or `receiveHook`.
+     * @event Client#preprocessingError
+     * @param {Object} error Converted error.
+     */
       .catch(error => this.send('preprocessingError', this.errorFormatter(error)))
   }
 

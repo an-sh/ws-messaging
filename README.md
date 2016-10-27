@@ -8,7 +8,7 @@
 [![JavaScript Style Guide](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 Just a really thin abstraction layer on top of WebSocket for Node.js
-and Web browsers with a Promises and EventEmitter based APIs.
+and Web Browsers with Promise and EventEmitter based APIs.
 
 ### Features
 
@@ -33,6 +33,8 @@ and Web browsers with a Promises and EventEmitter based APIs.
 - [Installation](#installation)
 - [Usage](#usage)
 - [API](#api)
+- [Network format description](#network-format-description)
+- [Data validation](#data-validation)
 - [Contribute](#contribute)
 - [License](#license)
 
@@ -92,7 +94,10 @@ client.on('connect', () => {
 })
 ```
 
-See tests in `test/index.js` for more usage examples.
+Essentially there are two usage patterns that are working in both
+directions. Fire and forget via `send`/`on`, and RPC-style via
+`invoke`/`register`. Unlike `on`, only a single handler function can
+be registered per a method name.
 
 ## API
 
@@ -100,6 +105,49 @@ See tests in `test/index.js` for more usage examples.
 [Client API](https://an-sh.github.io/ws-messaging/0.5/Client.html)
 documentation is available online.
 
+## Network format description
+
+This section describes what data is actually passed to an encoder.
+
+There are only two type of messages. The first one is for normal
+messages:
+
+```javascript
+{
+  name: string,
+  args: Array,
+  id?: number
+}
+```
+
+An `id` field is present for `invoke` calls. The second one is for
+ack (replies for `invoke` calls) messages:
+
+```javascript
+{
+  id: number
+  result?: Object
+  error?: Object
+}
+```
+
+Either a `result` or an `error` field is included. Note that an
+`error` is the value returned by an `errorFormatter`, by default
+`String` is used as an `errorFormatter`.
+
+## Data validation
+
+All incoming data must be validated on a server side, including errors
+that are passed to a catch callback. By default only the
+[network format](network-format-description) itself is
+validated. Validation can be made by a custom decoder (useful when a
+decoder is already using some scheme) or via a `receiveHook`, or
+inside a handler itself (useful for registered procedures). When
+validation is done inside `decoder`/`receiveHook`, just throw an error
+or reject a promise to fail a validation and prevent handlers
+execution. Also note that a promise returned by `invoke` can be
+rejected locally either with `Client.ConnectionError` or with
+`Client.TimeoutError`.
 
 ## Contribute
 
