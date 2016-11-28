@@ -3,7 +3,6 @@
 
 const Buffer = require('safe-buffer').Buffer
 const Client = require('../src/Client')
-const EventEmitter = require('events')
 const Server = require('../src/Server')
 const WebSocket = require('ws')
 const chai = require('chai')
@@ -290,10 +289,11 @@ describe('ws-messaging', function () {
     server = new Server({port}, {connectionHook}, {pingInterval: 1000})
     client = new Client(url, {WebSocket, pingInterval: 1000})
     return eventToPromise(client, 'connect')
-      .then(() => Promise.all([ eventToPromise(client, 'ping'),
-                                eventToPromise(client, 'pong'),
-                                eventToPromise(c, 'ping'),
-                                eventToPromise(c, 'pong') ]))
+      .then(() => Promise.all([
+        eventToPromise(client, 'ping'),
+        eventToPromise(client, 'pong'),
+        eventToPromise(c, 'ping'),
+        eventToPromise(c, 'pong') ]))
   })
 
   it('should trigger a disconnect on ping ack timeouts', function () {
@@ -336,8 +336,9 @@ describe('ws-messaging', function () {
     server = new Server({port}, {connectionHook})
     client = new Client(url, {WebSocket})
     return eventToPromise(client, 'close').then(() => {
-      return Promise.all([eventToPromise(client, 'connect'),
-                          eventToPromise(client, 'retry')])
+      return Promise.all([
+        eventToPromise(client, 'connect'),
+        eventToPromise(client, 'retry')])
     })
   })
 })
