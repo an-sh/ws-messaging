@@ -1,15 +1,18 @@
 'use strict'
 /* eslint-env mocha */
 
+const semver = require('semver')
+const prefix = semver.lt(process.version, '6.0.0') ? 'lib' : 'src'
+
 const Buffer = require('safe-buffer').Buffer
-const Client = require('../src/Client')
-const Server = require('../src/Server')
+const Client = require('../' + prefix + '/Client')
+const Server = require('../' + prefix + '/Server')
 const WebSocket = require('ws')
 const chai = require('chai')
 const eventToPromise = require('event-to-promise')
 const expect = chai.expect
 const msgpack = require('msgpack-lite')
-const utils = require('../src/utils')
+const utils = require('../' + prefix + '/utils')
 
 const port = 8000
 const url = `ws://localhost:${port}`
