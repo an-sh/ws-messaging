@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/an-sh/ws-messaging/compare/v0.5.3...v0.6.0) (2016-11-29)
+
+
+### Bug Fixes
+
+* transpiled code usage on node 4.x ([f267ce9](https://github.com/an-sh/ws-messaging/commit/f267ce9))
+
+
+### Chores
+
+* update dependencies ([f7b8e54](https://github.com/an-sh/ws-messaging/commit/f7b8e54))
+
+
+### BREAKING CHANGES
+
+* Drop node 0.12 support.
+
+
+
 <a name="0.5.3"></a>
 ## [0.5.3](https://github.com/an-sh/ws-messaging/compare/v0.5.2...v0.5.3) (2016-10-27)
 
