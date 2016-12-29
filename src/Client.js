@@ -1,6 +1,8 @@
 'use strict'
 /* global WebSocket */
 
+// Shared code for node and clients/browsers
+
 const EventEmitter = require('eventemitter3')
 const { assign, attempt, fromCallback, Promise } = require('./utils')
 
@@ -119,7 +121,7 @@ class Ack {
  */
 
 /**
- * Messages decoder. May also return promises for an asynchronous
+ * Messages encoder. May also return promises for an asynchronous
  * execution.
  *
  * @callback Client.Encoder
@@ -128,7 +130,7 @@ class Ack {
  */
 
 /**
- * Messages encoder. May also return promises for an asynchronous
+ * Messages decoder. May also return promises for an asynchronous
  * execution.
  *
  * @callback Client.Decoder
@@ -428,8 +430,8 @@ class Client extends EventEmitter {
     }
   }
 
-  _send (message) {
-    return attempt(() => this.encoder(message)).then(data => {
+  _send (message, skipEncoder = false) {
+    return attempt(() => skipEncoder ? message : this.encoder(message)).then(data => {
       if (this.w3c) {
         return this.socket.send(data)
       } else {
@@ -451,6 +453,27 @@ class Client extends EventEmitter {
   send (event, ...args) {
     let { message } = this._makeMessage(event, args, false)
     return this._send(message)
+  }
+
+  /**
+   * Send a message encoded by {@link Client#encodeMessage}, useful
+   * for identical messages broadcasting.
+   * @param {Object} data Result of {@link Client#encodeMessage}.
+   * @returns {Promise<undefined>} Resolves when a data has been sent.
+   */
+  sendEncoded (data) {
+    return this._send(data, true)
+  }
+
+  /**
+   * Encode a message for a later use with {@link Client#sendEncoded}.
+   * @param {string} event Event name.
+   * @param {*} [args] Arguments.
+   * @returns {Object} Encoded message.
+   */
+  encodeMessage (event, ...args) {
+    let { message } = this._makeMessage(event, args, false)
+    return attempt(() => this.encoder(message))
   }
 
   /**

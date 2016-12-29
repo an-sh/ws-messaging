@@ -123,6 +123,23 @@ describe('ws-messaging', function () {
     })
   })
 
+  it('should send encoded messages', function () {
+    let data = { x: 1 }
+    let id
+    function connectionHook (client) { id = client.id }
+    server = new Server({port}, {connectionHook})
+    client = new Client(url, {WebSocket})
+    return eventToPromise(client, 'connect').then(() => {
+      return client.encodeMessage('someEvent', data)
+    }).then(m => {
+      let c = server.getClient(id)
+      client.sendEncoded(m)
+      return eventToPromise(c, ('someEvent'))
+    }).then(d => {
+      expect(d).eql(data)
+    })
+  })
+
   it('should send messages from a server to a client', function () {
     let data = { x: 1 }
     let id
