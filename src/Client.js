@@ -229,6 +229,8 @@ class Ack {
  * send API, or a ws one (from Node.js server implementation with a
  * callback). By default if a global value is used, then it is `true`
  * and `false` otherwise.
+ * @property {Object} [wsOptions] Additional options to pass to ws
+ * socket constructor.
  */
 
 const retryConfig = {
@@ -255,7 +257,8 @@ const defaults = {
   sendHook: null,
   skipValidation: false,
   WebSocket: undefined,
-  w3c: undefined
+  w3c: undefined,
+  wsOptions: undefined
 }
 
 /**
@@ -379,7 +382,7 @@ class Client extends EventEmitter {
      * @member {WebSocket}
      * @readonly
      */
-    this.socket = new this.WebSocket(this.url, this.protocols)
+    this.socket = new this.WebSocket(this.url, this.protocols, this.wsOptions)
     if (this.w3c) { this.socket.binaryType = this.binaryType }
     this.connectHandler = () => {
       this.connected = true
