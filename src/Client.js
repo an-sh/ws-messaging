@@ -451,7 +451,8 @@ class Client extends EventEmitter {
       .then(() => skipEncoder ? message : this.encoder(message))
       .then(data => {
         if (!this.connected && !isAuth) {
-          throw new ConnectionError()
+          let id = skipEncoder ? undefined : message.id
+          throw new ConnectionError(id)
         }
         if (this.w3c) {
           return this.socket.send(data)
