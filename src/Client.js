@@ -24,6 +24,16 @@ function getOwnProp (obj, name) {
 
 // errors
 
+/**
+ * {@link Client#send}/{@link Client#invoke} is rejected with this
+ * error when connection is closed before a message is send or reply
+ * received (for `invoke` only).
+ *
+ * @class
+ * @augments Error
+ * @memberof Client
+ * @param {number} [id] Message id.
+ */
 function ConnectionError (id) {
   this.name = 'ConnectionError'
   this.id = id
@@ -31,6 +41,15 @@ function ConnectionError (id) {
 
 ConnectionError.prototype = Object.create(Error.prototype)
 
+/**
+ * {@link Client#invoke} is rejected with this error when no reply is
+ * received before {@link Client.SocketOptions} `ackTimeout`.
+ *
+ * @class
+ * @augments Error
+ * @memberof Client
+ * @param {number} id Message id.
+ */
 function TimeoutError (id) {
   this.name = 'TimeoutError'
   this.id = id
@@ -38,6 +57,15 @@ function TimeoutError (id) {
 
 TimeoutError.prototype = Object.create(Error.prototype)
 
+/**
+ * {@link Client#invoke} is rejected with this error by the other side
+ * when no handler is found for a procedure.
+ *
+ * @class
+ * @augments Error
+ * @memberof Client
+ * @param {string} procedure Name.
+ */
 function NoProcedureError (procedure) {
   this.name = 'NoProcedureError'
   this.procedure = procedure
