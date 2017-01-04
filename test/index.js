@@ -246,6 +246,12 @@ describe('ws-messaging', function () {
     })
   })
 
+  it('should not send to not connected sockets', function () {
+    server = new Server({port})
+    client = new Client(url, {WebSocket})
+    return client.send('msg').catch(err => expect(err).instanceof(Client.ConnectionError))
+  })
+
   it('should close server sockets on an auth timeout', function () {
     this.timeout(4000)
     this.slow(2000)

@@ -344,7 +344,7 @@ class Client extends EventEmitter {
       this._ping()
     }
     this.openHandler = () => {
-      this._send(this.auth)
+      this._send(this.auth, {isAuth: true})
       this.authTimeoutId = setTimeout(
         this.close.bind(this, 4008, 'Auth timeout', false),
         this.ackTimeout)
@@ -430,8 +430,11 @@ class Client extends EventEmitter {
     }
   }
 
-  _send (message, skipEncoder = false) {
+  _send (message, { skipEncoder = false, isAuth = false } = {}) {
     return attempt(() => skipEncoder ? message : this.encoder(message)).then(data => {
+      if (!this.connected && !isAuth) {
+        throw new ConnectionError()
+      }
       if (this.w3c) {
         return this.socket.send(data)
       } else {
@@ -462,7 +465,7 @@ class Client extends EventEmitter {
    * @returns {Promise<undefined>} Resolves when a data has been sent.
    */
   sendEncoded (data) {
-    return this._send(data, true)
+    return this._send(data, {skipEncoder: true})
   }
 
   /**
