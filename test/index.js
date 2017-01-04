@@ -365,7 +365,7 @@ describe('ws-messaging', function () {
       return Promise.all([
         eventToPromise(client, 'connect'),
         eventToPromise(client, 'retry')])
-    })
+    }).then(([, n]) => expect(n).equal(1))
   })
 })
 

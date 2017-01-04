@@ -357,9 +357,9 @@ class Client extends EventEmitter {
       /**
        * Emits retry events when auto reconnecting.
        * @event Client#retry
-       * @param {number} attempt Attempt number starting from `0`.
+       * @param {number} attempt Attempt number starting from `1`.
        */
-      emit.call(this, 'retry', this.attempt - 1)
+      emit.call(this, 'retry', this.attempt)
     }
   }
 
