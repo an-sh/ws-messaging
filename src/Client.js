@@ -235,10 +235,11 @@ class Client extends EventEmitter {
     this.url = url
     /**
      * Client id. Server-side only.
-     * @member {number}
+     * @member {number} id
+     * @memberof Client
+     * @instance
      * @readonly
      */
-    this.id
     assign(this, defaults, options)
     this.retryConfig = {}
     assign(this.retryConfig, retryConfig, options.autoReconnectOptions)
@@ -470,6 +471,8 @@ class Client extends EventEmitter {
 
   /**
    * Encode a message for a later use with {@link Client#sendEncoded}.
+   * Reserved event names (__MUST NOT__ be used): `connect`, `close`,
+   * `open`, `error`, `ping`, `pong`, `retry`.
    * @param {string} event Event name.
    * @param {*} [args] Arguments.
    * @returns {Object} Encoded message.
