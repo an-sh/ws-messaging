@@ -158,9 +158,31 @@ describe('ws-messaging', function () {
   it('should run a receive hook', function () {
     let id, run
     function connectionHook (client) { id = client.id }
-    function receiveHook (client) { run = true }
+    function receiveHook (msg) {
+      expect(msg).an('object')
+      run = true
+    }
     server = new Server({port}, {connectionHook})
     client = new Client(url, {WebSocket, receiveHook})
+    return eventToPromise(client, 'connect').then(() => {
+      let c = server.getClient(id)
+      c.send('someEvent')
+      return eventToPromise(client, ('someEvent'))
+    }).then(d => {
+      expect(run).true
+    })
+  })
+
+  it('should run a send hook', function () {
+    let id, run
+    function connectionHook (client) { id = client.id }
+    function sendHook (msg, isEncoded) {
+      expect(msg).an('object')
+      expect(isEncoded).false
+      run = true
+    }
+    server = new Server({port}, {connectionHook})
+    client = new Client(url, {WebSocket, sendHook})
     return eventToPromise(client, 'connect').then(() => {
       let c = server.getClient(id)
       c.send('someEvent')

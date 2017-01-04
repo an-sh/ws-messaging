@@ -149,6 +149,19 @@ class Ack {
  */
 
 /**
+ * Send hook is run when a client sends any message via a
+ * websocket. May also return promises for an asynchronous execution.
+ *
+ * @callback Client.SendHook
+ * @param {Client.Message|Object} message Message or object if
+ * `isEncoded` is `true`.
+ * @param {boolean} isEncoded If a message has been already encoded
+ * via {@link Client#encodeMessage}.
+ * @return {Promise<undefined>|undefined} Promise, if it is rejected no
+ * handlers will be called.
+ */
+
+/**
  * @typedef {Object} Client.RetryConfig
  *
  * @property {number} [factor=2]
@@ -179,6 +192,7 @@ class Ack {
  * @property {string|Array<string>} [protocols='ws-messaging']
  * WebSocket protocols.
  * @property {Client.ReceiveHook} [receiveHook] Receive hook.
+ * @property {Client.SendHook} [SendHook] Send hook.
  * @property {boolean} [skipValidation=false] Skips build-in
  * messages validation.
  * @property {Object} [WebSocket=undefined] Alternative websocket
@@ -210,6 +224,7 @@ const defaults = {
   pingTimeout: 20000,
   protocols: 'ws-messaging',
   receiveHook: null,
+  sendHook: null,
   skipValidation: false,
   WebSocket: undefined,
   w3c: undefined
@@ -432,17 +447,19 @@ class Client extends EventEmitter {
   }
 
   _send (message, { skipEncoder = false, isAuth = false } = {}) {
-    return attempt(() => skipEncoder ? message : this.encoder(message)).then(data => {
-      if (!this.connected && !isAuth) {
-        throw new ConnectionError()
-      }
-      if (this.w3c) {
-        return this.socket.send(data)
-      } else {
-        let binary = typeof data !== 'string'
-        return fromCallback(cb => this.socket.send(data, {binary}, cb))
-      }
-    })
+    return attempt(() => this.sendHook ? this.sendHook(message, skipEncoder) : null)
+      .then(() => skipEncoder ? message : this.encoder(message))
+      .then(data => {
+        if (!this.connected && !isAuth) {
+          throw new ConnectionError()
+        }
+        if (this.w3c) {
+          return this.socket.send(data)
+        } else {
+          let binary = typeof data !== 'string'
+          return fromCallback(cb => this.socket.send(data, {binary}, cb))
+        }
+      })
   }
 
   /**
