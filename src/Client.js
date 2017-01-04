@@ -187,8 +187,8 @@ class Ack {
  * encoder.
  * @property {function} [errorFormatter=String] Converter for JS
  * errors to some network format.
- * @property {number} [pingInterval=10000] Ping interval in ms.
- * @property {number} [pingTimeout=5000] Ping timeout in ms.
+ * @property {number} [pingInterval=20000] Ping interval in ms.
+ * @property {number} [pingTimeout=20000] Ping timeout in ms.
  * @property {string|Array<string>} [protocols='ws-messaging']
  * WebSocket protocols.
  * @property {Client.ReceiveHook} [receiveHook] Receive hook.
@@ -200,7 +200,7 @@ class Ack {
  * @property {boolean} [w3c=undefined] If WebSocket is using a w3c
  * send API, or a ws one (from Node.js server implementation with a
  * callback). By default if a global value is used, then it is `true`
- * and `false otherwise.
+ * and `false` otherwise.
  */
 
 const retryConfig = {
