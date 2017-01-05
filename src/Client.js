@@ -184,7 +184,7 @@ class Ack {
  * @param {Client.Message|Object} message Message or object if
  * `isEncoded` is `true`.
  * @param {boolean} isEncoded If a message has been already encoded
- * via {@link Client#encodeMessage}.
+ * via {@link Client#encodeMessage} or {@link Server#encodeMessage}.
  * @return {Promise<undefined>|undefined} Promise, if it is rejected no
  * handlers will be called.
  */
@@ -509,8 +509,9 @@ class Client extends EventEmitter {
   }
 
   /**
-   * Send a message encoded by {@link Client#encodeMessage}, useful
-   * for identical messages broadcasting.
+   * Send a message encoded by {@link Client#encodeMessage} or {@link
+   * Server#encodeMessage}, useful for identical messages
+   * broadcasting.
    * @param {Object} data Result of {@link Client#encodeMessage}.
    * @returns {Promise<undefined>} Resolves when a data has been sent.
    */

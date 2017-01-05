@@ -54,6 +54,8 @@ type ServerOptions = { WebSocketServer?: constructor,
  *
  * @emits Server#ready
  * @emits Server#error
+ *
+ * @borrows Client#encodeMessage as #encodeMessage
  */
 class Server extends EventEmitter {
   /* ::
@@ -150,6 +152,11 @@ class Server extends EventEmitter {
    */
   getClient (id /* : string */) /* : Client */ {
     return this.clients.get(id)
+  }
+
+  encodeMessage (event /* : string */, ...args /* : Array<any> */) /* : any */ {
+    let encoder = this.socketOptions.encoder || JSON.stringify
+    return attempt(() => encoder({ name: event, args }))
   }
 
   /**
