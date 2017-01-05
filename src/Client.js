@@ -596,6 +596,13 @@ class Client extends EventEmitter {
  */
 Client.prototype.emit = Client.prototype.send
 
+/**
+ * Alias for {@link Client#sendEncoded}.
+ * @method
+ * @name Client#emitEncoded
+ */
+Client.prototype.emitEncoded = Client.prototype.sendEncoded
+
 Client.ConnectionError = ConnectionError
 Client.NoProcedureError = NoProcedureError
 Client.TimeoutError = TimeoutError
