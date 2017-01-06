@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/an-sh/ws-messaging/compare/v0.6.0...v0.7.0) (2017-01-06)
+
+
+### Bug Fixes
+
+* don't allow sending data when client is not connected ([64e3cb2](https://github.com/an-sh/ws-messaging/commit/64e3cb2))
+
+
+### Code Refactoring
+
+* start attempts counting from 1 ([9f6da34](https://github.com/an-sh/ws-messaging/commit/9f6da34))
+* tweak default ping settings ([0455477](https://github.com/an-sh/ws-messaging/commit/0455477))
+
+
+### Features
+
+* add encodeMessage to Server ([800d081](https://github.com/an-sh/ws-messaging/commit/800d081))
+* add sendHook ([b5fc8ea](https://github.com/an-sh/ws-messaging/commit/b5fc8ea))
+* add support for sending already encoded messages ([6c6d065](https://github.com/an-sh/ws-messaging/commit/6c6d065))
+* emitEncoded alias for sendEncoded ([5baf109](https://github.com/an-sh/ws-messaging/commit/5baf109))
+* pass additional options to ws socket constructor, fixes [#1](https://github.com/an-sh/ws-messaging/issues/1) ([32237ad](https://github.com/an-sh/ws-messaging/commit/32237ad))
+
+
+### BREAKING CHANGES
+
+* Start attempts counting from 1.
+* Tweak default ping settings.
+
+
+
 <a name="0.6.0"></a>
 # [0.6.0](https://github.com/an-sh/ws-messaging/compare/v0.5.3...v0.6.0) (2016-11-29)
 
