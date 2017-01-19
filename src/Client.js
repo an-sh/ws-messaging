@@ -320,7 +320,7 @@ class Client extends EventEmitter {
     attempt(() => this.decoder(data.data))
       .then(msg => { message = msg })
       .then(() => { if (!this.skipValidation) { validate(message) } })
-      .then(() => { if (this.receiveHook) this.receiveHook(message) })
+      .then(() => { if (this.receiveHook) { return this.receiveHook(message) } })
       .then(() => this._dispatch(message))
     /**
      * Emitted when the other side failed to decode or validate a
