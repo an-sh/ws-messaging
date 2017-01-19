@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.7.2"></a>
+## [0.7.2](https://github.com/an-sh/ws-messaging/compare/v0.7.1...v0.7.2) (2017-01-19)
+
+
+### Bug Fixes
+
+* actually fix async receiveHook handling ([66934c9](https://github.com/an-sh/ws-messaging/commit/66934c9))
+
+
+
 <a name="0.7.1"></a>
 ## [0.7.1](https://github.com/an-sh/ws-messaging/compare/v0.7.0...v0.7.1) (2017-01-17)
 
