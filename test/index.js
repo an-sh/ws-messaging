@@ -117,7 +117,7 @@ describe('ws-messaging', function () {
     return eventToPromise(client, 'connect').then(() => {
       let c = server.getClient(id)
       client.send('someEvent', data)
-      return eventToPromise(c, ('someEvent'))
+      return eventToPromise(c, 'someEvent')
     }).then(d => {
       expect(d).eql(data)
     })
@@ -134,7 +134,7 @@ describe('ws-messaging', function () {
     }).then(m => {
       let c = server.getClient(id)
       client.sendEncoded(m)
-      return eventToPromise(c, ('someEvent'))
+      return eventToPromise(c, 'someEvent')
     }).then(d => {
       expect(d).eql(data)
     })
@@ -151,7 +151,7 @@ describe('ws-messaging', function () {
     }).then(m => {
       let c = server.getClient(id)
       client.sendEncoded(m)
-      return eventToPromise(c, ('someEvent'))
+      return eventToPromise(c, 'someEvent')
     }).then(d => {
       expect(d).eql(data)
     })
@@ -166,27 +166,50 @@ describe('ws-messaging', function () {
     return eventToPromise(client, 'connect').then(() => {
       let c = server.getClient(id)
       c.send('someEvent', data)
-      return eventToPromise(client, ('someEvent'))
+      return eventToPromise(client, 'someEvent')
     }).then(d => {
       expect(d).eql(data)
     })
   })
 
   it('should run a receive hook', function () {
-    let id, run
+    let id
+    let run = 0
     function connectionHook (client) { id = client.id }
     function receiveHook (msg) {
       expect(msg).an('object')
-      run = true
+      run++
     }
     server = new Server({port}, {connectionHook})
     client = new Client(url, {WebSocket, receiveHook})
     return eventToPromise(client, 'connect').then(() => {
       let c = server.getClient(id)
       c.send('someEvent')
-      return eventToPromise(client, ('someEvent'))
+      return eventToPromise(client, 'someEvent')
     }).then(d => {
-      expect(run).true
+      expect(run).equal(2)
+    })
+  })
+
+  it('should emit errors from receive hook', function () {
+    let id, run, error
+    function connectionHook (client) { id = client.id }
+    function receiveHook (msg) {
+      if (run) {
+        error = new Error('error')
+        return Promise.reject(error)
+      } else {
+        run = true
+      }
+    }
+    server = new Server({port}, {connectionHook})
+    client = new Client(url, {WebSocket, receiveHook})
+    return eventToPromise(client, 'connect').then(() => {
+      let c = server.getClient(id)
+      c.send('someEvent')
+      return eventToPromise(c, 'preprocessingError')
+    }).then(err => {
+      expect(err).equal(error.toString())
     })
   })
 
@@ -203,7 +226,7 @@ describe('ws-messaging', function () {
     return eventToPromise(client, 'connect').then(() => {
       let c = server.getClient(id)
       c.send('someEvent')
-      return eventToPromise(client, ('someEvent'))
+      return eventToPromise(client, 'someEvent')
     }).then(d => {
       expect(run).true
     })
@@ -265,7 +288,7 @@ describe('ws-messaging', function () {
     return eventToPromise(client, 'connect').then(() => {
       let c = server.getClient(id)
       client.send('someEvent', data)
-      return eventToPromise(c, ('someEvent'))
+      return eventToPromise(c, 'someEvent')
     }).then(d => {
       expect(d).eql(data)
     })
@@ -479,7 +502,7 @@ describe('ws-messaging validation', function () {
     return eventToPromise(client, 'connect').then(() => {
       let c = server.getClient(id)
       c.socket.send(JSON.stringify(msg))
-      return eventToPromise(client, ('someEvent'))
+      return eventToPromise(client, 'someEvent')
     })
   })
 })
