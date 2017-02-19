@@ -220,7 +220,7 @@ class Ack {
  * @property {string|Array<string>} [protocols='ws-messaging']
  * WebSocket protocols.
  * @property {Client.ReceiveHook} [receiveHook] Receive hook.
- * @property {Client.SendHook} [SendHook] Send hook.
+ * @property {Client.SendHook} [rendHook] Send hook.
  * @property {boolean} [skipValidation=false] Skips build-in
  * messages validation.
  * @property {Object} [WebSocket=undefined] Alternative websocket
