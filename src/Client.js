@@ -567,6 +567,7 @@ class Client extends EventEmitter {
   reconnect () {
     this.terminated = false
     if (this._isOpen()) {
+      // eslint-disable-next-line no-useless-return
       return
     } else if (this.WebSocket && this.url) {
       this._open()

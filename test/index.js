@@ -1,5 +1,6 @@
 'use strict'
 /* eslint-env mocha */
+/* eslint-disable no-unused-expressions */
 
 const semver = require('semver')
 const prefix = semver.lt(process.version, '6.0.0') ? 'lib' : 'src'
