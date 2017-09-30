@@ -78,7 +78,7 @@ const Client = require('ws-messaging/client')
 const url = `ws://${HOST}:${PORT}`
 const auth = { /* will be authData in connectionHook */ }
 
-let client = new Client(url, auth)
+let client = new Client(url, {auth})
 
 client.on('someEvent', (...data) => { /* do smth */ })
 
