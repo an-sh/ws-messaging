@@ -391,7 +391,7 @@ describe('ws-messaging', function () {
     let c
     function connectionHook (client) { c = client }
     server = new Server({port}, {connectionHook},
-                        {pingInterval: 1000, pingTimeout: 1000})
+      {pingInterval: 1000, pingTimeout: 1000})
     client = new Client(url, {WebSocket, autoReconnect: false})
     return eventToPromise(client, 'connect')
       .then(() => { client.handlers.ping = () => new Promise(() => {}) })

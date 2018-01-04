@@ -75,8 +75,8 @@ class Server extends EventEmitter {
    * @param {Client.SocketOptions} [socketOptions] Socket options.
    */
   constructor (wssOptions /* : Object */,
-               serverOptions /* : ServerOptions */ = {},
-               socketOptions /* : SocketOptions  */ = {}) {
+    serverOptions /* : ServerOptions */ = {},
+    socketOptions /* : SocketOptions  */ = {}) {
     super()
     this.socketOptions = { WebSocket }
     assign(this.socketOptions, socketOptions)
@@ -112,8 +112,8 @@ class Server extends EventEmitter {
   }
 
   _addClient (socket /* : EventEmitter */,
-              data /* : any */,
-              timeout /* : number */) /* : void */ {
+    data /* : any */,
+    timeout /* : number */) /* : void */ {
     let client
     clearTimeout(timeout)
     uid(18).then(id => {
