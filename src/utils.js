@@ -1,7 +1,5 @@
 'use strict'
 
-const Promise = require('promise-polyfill')
-
 function assign (target) {
   for (let i = 1; i < arguments.length; i++) {
     let source = arguments[i]

@@ -34,7 +34,6 @@
   "license": "MIT",
   "dependencies": {
     "eventemitter3": "^3.0.0",
-    "promise-polyfill": "^7.0.0",
     "semver": "^5.3.0",
     "uid-safe": "^2.1.2",
     "ws": "^3.3.3"
