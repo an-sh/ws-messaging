@@ -4,7 +4,7 @@
 // Shared code for node and clients/browsers
 
 const EventEmitter = require('eventemitter3')
-const { assign, attempt, fromCallback, Promise } = require('./utils')
+const { assign, attempt, fromCallback } = require('./utils')
 
 const blacklist = [ 'close', 'open', 'error', 'pong', 'retry' ]
 

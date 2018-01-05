@@ -33,6 +33,5 @@ function fromCallback (fn) {
 module.exports = {
   assign,
   attempt,
-  fromCallback,
-  Promise
+  fromCallback
 }

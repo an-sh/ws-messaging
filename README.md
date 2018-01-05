@@ -24,8 +24,7 @@ and Web Browsers with Promise and EventEmitter based APIs.
 
 - Binary messages support via custom encoders/decoders.
 
-- Reasonable client size (also includes a Promise polyfill): around
-  16KB minified, 5KB gziped.
+- Reasonable client size: around 14KB minified, 5KB gziped.
 
 ## Table of Contents
 
