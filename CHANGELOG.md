@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/an-sh/ws-messaging/compare/v1.0.0...v1.0.1) (2018-06-23)
+
+
+### Bug Fixes
+
+* silence not open warnings, closes [#3](https://github.com/an-sh/ws-messaging/issues/3) ([f985cfe](https://github.com/an-sh/ws-messaging/commit/f985cfe))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/an-sh/ws-messaging/compare/v0.8.0...v1.0.0) (2018-01-05)
 
