@@ -129,7 +129,7 @@ class Server extends EventEmitter {
       if (client._isOpen()) {
         client._setEvents()
         client.connected = true
-        client.send('connect', authReplyData)
+        client.send('connect', authReplyData).catch(() => {})
         client._ping()
       }
     }).catch(error => {
