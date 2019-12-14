@@ -100,8 +100,8 @@ be registered per a method name.
 
 ## API
 
-[Server API](https://an-sh.github.io/ws-messaging/1.0/Server.html) and
-[Client API](https://an-sh.github.io/ws-messaging/1.0/Client.html)
+[Server API](https://an-sh.github.io/ws-messaging/2.0/Server.html) and
+[Client API](https://an-sh.github.io/ws-messaging/2.0/Client.html)
 documentation is available online.
 
 ## Network format description

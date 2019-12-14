@@ -1,12 +1,16 @@
 'use strict'
 
+function hasOwnProperty (obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop)
+}
+
 function assign (target) {
   for (let i = 1; i < arguments.length; i++) {
-    let source = arguments[i]
+    const source = arguments[i]
     if (!source) { continue }
-    for (let key in source) {
+    for (const key in source) {
       /* istanbul ignore else */
-      if (source.hasOwnProperty(key)) {
+      if (hasOwnProperty(source, key)) {
         target[key] = source[key]
       }
     }
@@ -33,5 +37,6 @@ function fromCallback (fn) {
 module.exports = {
   assign,
   attempt,
-  fromCallback
+  fromCallback,
+  hasOwnProperty
 }

@@ -106,7 +106,7 @@ class Server extends EventEmitter {
   }
 
   _onConnection (socket /* : Object & EventEmitter */) /* : void */ {
-    let timeout = setTimeout(
+    const timeout = setTimeout(
       socket.close.bind(socket, CLOSE_FORBIDDEN), this.authTimeout)
     socket.once('message', data => this._addClient(socket, data, timeout))
   }
@@ -117,7 +117,7 @@ class Server extends EventEmitter {
     let client
     clearTimeout(timeout)
     uid(18).then(id => {
-      client = new Client(null, assign({socket, id}, this.socketOptions))
+      client = new Client(null, assign({ socket, id }, this.socketOptions))
       client.autoReconnect = false
       this.clients.set(client.id, client)
       client.on('close', () => this._removeClient(client.id))
@@ -135,7 +135,7 @@ class Server extends EventEmitter {
     }).catch(error => {
       /* istanbul ignore else */
       if (client) {
-        let str = error.toString()
+        const str = error.toString()
         client.close(CLOSE_FORBIDDEN, str)
       }
     })
@@ -155,7 +155,7 @@ class Server extends EventEmitter {
   }
 
   encodeMessage (event /* : string */, ...args /* : Array<any> */) /* : any */ {
-    let encoder = this.socketOptions.encoder || JSON.stringify
+    const encoder = this.socketOptions.encoder || JSON.stringify
     return attempt(() => encoder({ name: event, args }))
   }
 
@@ -165,7 +165,7 @@ class Server extends EventEmitter {
    * @returns {Promise<undefined>} Promise.
    */
   close (code /* : number */ = 1000) /* : Promise<void> */ {
-    for (let [, client] of this.clients) {
+    for (const [, client] of this.clients) {
       client.close(code)
     }
     this.clients.clear()

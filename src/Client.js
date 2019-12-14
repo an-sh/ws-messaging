@@ -4,9 +4,9 @@
 // Shared code for node and clients/browsers
 
 const EventEmitter = require('eventemitter3')
-const { assign, attempt, fromCallback } = require('./utils')
+const { assign, attempt, fromCallback, hasOwnProperty } = require('./utils')
 
-const blacklist = [ 'close', 'open', 'error', 'pong', 'retry' ]
+const blacklist = ['close', 'open', 'error', 'pong', 'retry']
 
 // utils
 
@@ -19,7 +19,7 @@ function isBlacklistedEvent (name) {
 }
 
 function getOwnProp (obj, name) {
-  return obj.hasOwnProperty(name) ? obj[name] : undefined
+  return hasOwnProperty(obj, name) ? obj[name] : undefined
 }
 
 // errors
@@ -84,15 +84,15 @@ function validate (message) {
   if (message instanceof Object) {
     if (message.name) { // message
       if (typeof message.name === 'string' && message.args instanceof Array) {
-        let nprops = Object.keys(message).length
+        const nprops = Object.keys(message).length
         if (nprops === 2 || (nprops === 3 && validateId(message.id))) {
           passed = true
         }
       }
     } else { // ack message
-      let nprops = Object.keys(message).length
+      const nprops = Object.keys(message).length
       if (nprops === 2 && validateId(message.id)) {
-        if (message.hasOwnProperty('error') || message.hasOwnProperty('result')) {
+        if (hasOwnProperty(message, 'error') || hasOwnProperty(message, 'result')) {
           passed = true
         }
       }
@@ -125,7 +125,7 @@ class Ack {
   settle (message) {
     clearTimeout(this.timeout)
     this.cb()
-    if (message.hasOwnProperty('error')) {
+    if (hasOwnProperty(message, 'error')) {
       this.reject(message.error)
     } else {
       this.resolve(message.result)
@@ -352,8 +352,8 @@ class Client extends EventEmitter {
   _ping () {
     this.pingTimeoutId = setTimeout(() => {
       emit.call(this, 'ping')
-      let timeout = this.pingTimeout
-      let { message, promise } = this._makeMessage('ping', [], true, timeout)
+      const timeout = this.pingTimeout
+      const { message, promise } = this._makeMessage('ping', [], true, timeout)
       this._send(message).then(() => promise)
         .then(() => emit.call(this, 'pong'))
         .then(() => this._ping())
@@ -367,10 +367,10 @@ class Client extends EventEmitter {
   }
 
   _reconnect () {
-    let { factor, maxTimeout, minTimeout, randomize, retries } = this.retryConfig
+    const { factor, maxTimeout, minTimeout, randomize, retries } = this.retryConfig
     if (this.attempt >= retries || this.terminated) { return }
-    let rand = 1 + (randomize ? Math.random() : 0)
-    let timeout = Math.min(rand * minTimeout * Math.pow(factor, this.attempt), maxTimeout)
+    const rand = 1 + (randomize ? Math.random() : 0)
+    const timeout = Math.min(rand * minTimeout * Math.pow(factor, this.attempt), maxTimeout)
     this.reconnectTimeoutId = setTimeout(this.reconnect.bind(this), timeout)
     this.attempt++
   }
@@ -391,7 +391,7 @@ class Client extends EventEmitter {
       this._ping()
     }
     this.openHandler = () => {
-      this._send(this.auth, {isAuth: true})
+      this._send(this.auth, { isAuth: true })
       this.authTimeoutId = setTimeout(
         this.close.bind(this, 4008, 'Auth timeout', false),
         this.ackTimeout)
@@ -417,10 +417,10 @@ class Client extends EventEmitter {
     this.off('connect', this.connectHandler)
     this.off('open', this.openHandler)
     if (ev.code === 4003 || !this.url) { this.terminated = true }
-    for (let id in this.pendingAcks) {
+    for (const id in this.pendingAcks) {
       /* istanbul ignore else */
-      if (this.pendingAcks.hasOwnProperty(id)) {
-        let ack = this.pendingAcks[id]
+      if (hasOwnProperty(this.pendingAcks, id)) {
+        const ack = this.pendingAcks[id]
         ack.forceNack(new ConnectionError(id))
       }
     }
@@ -435,11 +435,11 @@ class Client extends EventEmitter {
   }
 
   _makeMessage (name, args, needsAck, ackTimeout = this.ackTimeout) {
-    let promise, message
-    message = {name, args}
+    let promise
+    const message = { name, args }
     if (needsAck) {
-      let id = this.counter++
-      let ack = new Ack(id, ackTimeout, () => delete this.pendingAcks[id])
+      const id = this.counter++
+      const ack = new Ack(id, ackTimeout, () => delete this.pendingAcks[id])
       this.pendingAcks[id] = ack
       promise = ack.promise
       message.id = id
@@ -458,21 +458,21 @@ class Client extends EventEmitter {
       if (isBlacklistedEvent(message.name)) { return }
       if (message.name === 'connect' && this.connected) { return }
       if (message.id) {
-        let id = message.id
-        let fn = getOwnProp(this.handlers, message.name)
+        const id = message.id
+        const fn = getOwnProp(this.handlers, message.name)
         if (fn) {
           attempt(() => fn.apply(null, message.args))
-            .then((result = null) => this._send({id, result}))
-            .catch(error => this._send({id, error: this.errorFormatter(error)}))
+            .then((result = null) => this._send({ id, result }))
+            .catch(error => this._send({ id, error: this.errorFormatter(error) }))
         } else {
-          let error = this.errorFormatter(new NoProcedureError(message.name))
-          this._send({id, error})
+          const error = this.errorFormatter(new NoProcedureError(message.name))
+          this._send({ id, error })
         }
       } else {
         emit.apply(this, concat(message.name, message.args))
       }
     } else {
-      let ack = this.pendingAcks[message.id]
+      const ack = this.pendingAcks[message.id]
       if (ack) { ack.settle(message) }
     }
   }
@@ -482,14 +482,14 @@ class Client extends EventEmitter {
       .then(() => skipEncoder ? message : this.encoder(message))
       .then(data => {
         if (!this.connected && !isAuth) {
-          let id = skipEncoder ? undefined : message.id
+          const id = skipEncoder ? undefined : message.id
           throw new ConnectionError(id)
         }
         if (this.w3c) {
           return this.socket.send(data)
         } else {
-          let binary = typeof data !== 'string'
-          return fromCallback(cb => this.socket.send(data, {binary}, cb))
+          const binary = typeof data !== 'string'
+          return fromCallback(cb => this.socket.send(data, { binary }, cb))
         }
       })
   }
@@ -504,7 +504,7 @@ class Client extends EventEmitter {
    * @returns {Promise<undefined>} Resolves when a data has been sent.
    */
   send (event, ...args) {
-    let { message } = this._makeMessage(event, args, false)
+    const { message } = this._makeMessage(event, args, false)
     return this._send(message)
   }
 
@@ -516,7 +516,7 @@ class Client extends EventEmitter {
    * @returns {Promise<undefined>} Resolves when a data has been sent.
    */
   sendEncoded (data) {
-    return this._send(data, {skipEncoder: true})
+    return this._send(data, { skipEncoder: true })
   }
 
   /**
@@ -528,7 +528,7 @@ class Client extends EventEmitter {
    * @returns {Object} Encoded message.
    */
   encodeMessage (event, ...args) {
-    let { message } = this._makeMessage(event, args, false)
+    const { message } = this._makeMessage(event, args, false)
     return attempt(() => this.encoder(message))
   }
 
@@ -543,7 +543,7 @@ class Client extends EventEmitter {
    * received.
    */
   invoke (name, ...args) {
-    let { message, promise } = this._makeMessage(name, args, true)
+    const { message, promise } = this._makeMessage(name, args, true)
     return this._send(message).then(() => promise)
   }
 

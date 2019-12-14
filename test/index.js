@@ -45,27 +45,27 @@ afterEach('cleanup', function () {
 
 describe('ws-messaging', function () {
   it('should spawn a server', function () {
-    server = new Server({port})
+    server = new Server({ port })
     return eventToPromise(server, 'ready')
   })
 
   it('should connect to a server', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect')
   })
 
   it('should confirm auth with a connect hook', function () {
-    let auth = { token: 'token' }
-    let reply = { user: 'user' }
+    const auth = { token: 'token' }
+    const reply = { user: 'user' }
     let client, req
     function connectionHook (_client, _data) {
       client = _client
       req = _data
       return reply
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, auth})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, auth })
     return eventToPromise(client, 'connect').then(rep => {
       expect(client).instanceof(Client)
       expect(req).eql(auth)
@@ -79,9 +79,9 @@ describe('ws-messaging', function () {
       error = new Error('Auth error')
       throw error
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
-    return eventToPromise(client, 'close', {error: 'connect'})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
+    return eventToPromise(client, 'close', { error: 'connect' })
       .then(ev => {
         expect(ev.code).eql(4003)
         expect(ev.reason).eql(error.toString())
@@ -91,17 +91,17 @@ describe('ws-messaging', function () {
   })
 
   it('should use global WebSocket if available', function () {
-    let auth = { token: 'token' }
-    let reply = { user: 'user' }
+    const auth = { token: 'token' }
+    const reply = { user: 'user' }
     let c, req
     function connectionHook (_client, _data) {
       c = _client
       req = _data
       return reply
     }
-    server = new Server({port}, {connectionHook})
+    server = new Server({ port }, { connectionHook })
     global.WebSocket = WebSocket
-    client = new Client(url, {auth})
+    client = new Client(url, { auth })
     return eventToPromise(client, 'connect').then(rep => {
       expect(c).instanceof(Client)
       expect(req).eql(auth)
@@ -110,13 +110,13 @@ describe('ws-messaging', function () {
   })
 
   it('should send messages from a client to a server', function () {
-    let data = { x: 1 }
+    const data = { x: 1 }
     let id
     function connectionHook (client) { id = client.id }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       client.send('someEvent', data)
       return eventToPromise(c, 'someEvent')
     }).then(d => {
@@ -125,15 +125,15 @@ describe('ws-messaging', function () {
   })
 
   it('should send encoded messages', function () {
-    let data = { x: 1 }
+    const data = { x: 1 }
     let id
     function connectionHook (client) { id = client.id }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect').then(() => {
       return client.encodeMessage('someEvent', data)
     }).then(m => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       client.sendEncoded(m)
       return eventToPromise(c, 'someEvent')
     }).then(d => {
@@ -142,15 +142,15 @@ describe('ws-messaging', function () {
   })
 
   it('should send server encoded messages', function () {
-    let data = { x: 1 }
+    const data = { x: 1 }
     let id
     function connectionHook (client) { id = client.id }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect').then(() => {
       return server.encodeMessage('someEvent', data)
     }).then(m => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       client.sendEncoded(m)
       return eventToPromise(c, 'someEvent')
     }).then(d => {
@@ -159,13 +159,13 @@ describe('ws-messaging', function () {
   })
 
   it('should send messages from a server to a client', function () {
-    let data = { x: 1 }
+    const data = { x: 1 }
     let id
     function connectionHook (client) { id = client.id }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       c.send('someEvent', data)
       return eventToPromise(client, 'someEvent')
     }).then(d => {
@@ -181,10 +181,10 @@ describe('ws-messaging', function () {
       expect(msg).an('object')
       run++
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, receiveHook})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, receiveHook })
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       c.send('someEvent')
       return eventToPromise(client, 'someEvent')
     }).then(d => {
@@ -203,10 +203,10 @@ describe('ws-messaging', function () {
         run = true
       }
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, receiveHook})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, receiveHook })
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       c.send('someEvent')
       return eventToPromise(c, 'preprocessingError')
     }).then(err => {
@@ -222,10 +222,10 @@ describe('ws-messaging', function () {
       expect(isEncoded).false
       run = true
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, sendHook})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, sendHook })
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       c.send('someEvent')
       return eventToPromise(client, 'someEvent')
     }).then(d => {
@@ -234,8 +234,8 @@ describe('ws-messaging', function () {
   })
 
   it('should invoke server procedures', function () {
-    let data = { x: 1 }
-    let result = { y: 2 }
+    const data = { x: 1 }
+    const result = { y: 2 }
     let arg
     function connectionHook (client) {
       client.register('someProcedure', _arg => {
@@ -243,8 +243,8 @@ describe('ws-messaging', function () {
         return result
       })
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect')
       .then(() => client.invoke('someProcedure', data))
       .then(res => {
@@ -261,8 +261,8 @@ describe('ws-messaging', function () {
         throw error
       })
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect')
       .then(() => client.invoke('someProcedure'))
       .then(notReachable)
@@ -270,8 +270,8 @@ describe('ws-messaging', function () {
   })
 
   it('should return NoProcedureError errors', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect')
       .then(() => client.invoke('someProcedure'))
       .then(notReachable)
@@ -279,15 +279,15 @@ describe('ws-messaging', function () {
   })
 
   it('should send and receive binary messages', function () {
-    let data = { x: 1, y: Buffer.from([1, 2, 3]) }
+    const data = { x: 1, y: Buffer.from([1, 2, 3]) }
     let id
     function connectionHook (client) { id = client.id }
-    let encoder = msgpack.encode
-    let decoder = msgpack.decode
-    server = new Server({port}, {connectionHook}, {encoder, decoder})
-    client = new Client(url, {WebSocket, encoder, decoder})
+    const encoder = msgpack.encode
+    const decoder = msgpack.decode
+    server = new Server({ port }, { connectionHook }, { encoder, decoder })
+    client = new Client(url, { WebSocket, encoder, decoder })
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       client.send('someEvent', data)
       return eventToPromise(c, 'someEvent')
     }).then(d => {
@@ -300,7 +300,7 @@ describe('ws-messaging', function () {
     function connectionHook (_client) {
       c = _client
     }
-    server = new Server({port}, {connectionHook})
+    server = new Server({ port }, { connectionHook })
     global.WebSocket = WebSocket
     client = new Client(url)
     return eventToPromise(client, 'connect').then(() => {
@@ -310,16 +310,16 @@ describe('ws-messaging', function () {
   })
 
   it('should not send to not connected sockets', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
     return client.send('msg').catch(err => expect(err).instanceof(Client.ConnectionError))
   })
 
   it('should close server sockets on an auth timeout', function () {
     this.timeout(4000)
     this.slow(2000)
-    server = new Server({port}, {authTimeout: 1000})
-    let socket = new WebSocket(url)
+    server = new Server({ port }, { authTimeout: 1000 })
+    const socket = new WebSocket(url)
     return eventToPromise(socket, 'close').then(ev => {
       expect(ev.code).eql(4003)
     })
@@ -331,8 +331,8 @@ describe('ws-messaging', function () {
     function connectionHook (client) {
       return new Promise(() => {})
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, ackTimeout: 1000, autoReconnect: false})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, ackTimeout: 1000, autoReconnect: false })
     return eventToPromise(client, 'close').then(ev => {
       expect(ev.code).eql(4008)
     })
@@ -348,8 +348,8 @@ describe('ws-messaging', function () {
         setTimeout(() => client.close(), 1000)
       }
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, autoReconnect: false})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, autoReconnect: false })
     return eventToPromise(client, 'close').then(() => {
       client.reconnect()
       return eventToPromise(client, 'connect')
@@ -362,8 +362,8 @@ describe('ws-messaging', function () {
     function connectionHook (client) {
       client.close()
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, autoReconnectOptions: {retries: 0}})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, autoReconnectOptions: { retries: 0 } })
     return eventToPromise(client, 'close').then(() => {
       eventToPromise(client, 'connect').then(notReachable)
       return new Promise(resolve => setTimeout(resolve, 1000))
@@ -375,14 +375,14 @@ describe('ws-messaging', function () {
     this.slow(2000)
     let c
     function connectionHook (client) { c = client }
-    server = new Server({port}, {connectionHook}, {pingInterval: 1000})
-    client = new Client(url, {WebSocket, pingInterval: 1000})
+    server = new Server({ port }, { connectionHook }, { pingInterval: 1000 })
+    client = new Client(url, { WebSocket, pingInterval: 1000 })
     return eventToPromise(client, 'connect')
       .then(() => Promise.all([
         eventToPromise(client, 'ping'),
         eventToPromise(client, 'pong'),
         eventToPromise(c, 'ping'),
-        eventToPromise(c, 'pong') ]))
+        eventToPromise(c, 'pong')]))
   })
 
   it('should trigger a disconnect on ping ack timeouts', function () {
@@ -390,9 +390,9 @@ describe('ws-messaging', function () {
     this.slow(4000)
     let c
     function connectionHook (client) { c = client }
-    server = new Server({port}, {connectionHook},
-      {pingInterval: 1000, pingTimeout: 1000})
-    client = new Client(url, {WebSocket, autoReconnect: false})
+    server = new Server({ port }, { connectionHook },
+      { pingInterval: 1000, pingTimeout: 1000 })
+    client = new Client(url, { WebSocket, autoReconnect: false })
     return eventToPromise(client, 'connect')
       .then(() => { client.handlers.ping = () => new Promise(() => {}) })
       .then(() => eventToPromise(c, 'close'))
@@ -404,8 +404,8 @@ describe('ws-messaging', function () {
     function connectionHook (client) {
       return new Promise(resolve => setTimeout(resolve, 2000))
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'open')
       .then(() => new Promise(resolve => setTimeout(resolve, 1000)))
       .then(() => client.close())
@@ -422,8 +422,8 @@ describe('ws-messaging', function () {
         setTimeout(() => client.close(), 1000)
       }
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'close').then(() => {
       return Promise.all([
         eventToPromise(client, 'connect'),
@@ -434,8 +434,8 @@ describe('ws-messaging', function () {
 
 describe('ws-messaging validation', function () {
   it('should validate messages type', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send('arbitraryData')
       return eventToPromise(client, 'preprocessingError')
@@ -443,9 +443,9 @@ describe('ws-messaging validation', function () {
   })
 
   it('should validate message objects structure', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
-    let msg = { name: 'name', args: '' }
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
+    const msg = { name: 'name', args: '' }
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(JSON.stringify(msg))
       return eventToPromise(client, 'preprocessingError')
@@ -453,9 +453,9 @@ describe('ws-messaging validation', function () {
   })
 
   it('should validate message objects field count', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
-    let msg = { name: 'name', args: [], data: 'data' }
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
+    const msg = { name: 'name', args: [], data: 'data' }
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(JSON.stringify(msg))
       return eventToPromise(client, 'preprocessingError')
@@ -463,9 +463,9 @@ describe('ws-messaging validation', function () {
   })
 
   it('should validate ack messages id', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
-    let msg = { id: -1 }
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
+    const msg = { id: -1 }
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(JSON.stringify(msg))
       return eventToPromise(client, 'preprocessingError')
@@ -473,9 +473,9 @@ describe('ws-messaging validation', function () {
   })
 
   it('should validate ack messages data', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
-    let msg = { id: 1, data: 'data' }
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
+    const msg = { id: 1, data: 'data' }
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(JSON.stringify(msg))
       return eventToPromise(client, 'preprocessingError')
@@ -483,11 +483,11 @@ describe('ws-messaging validation', function () {
   })
 
   it('should validate if messages are Objects', function () {
-    let encoder = msgpack.encode
-    let decoder = msgpack.decode
-    server = new Server({port}, null, {encoder, decoder})
-    client = new Client(url, {WebSocket, encoder, decoder})
-    let msg = 'data'
+    const encoder = msgpack.encode
+    const decoder = msgpack.decode
+    server = new Server({ port }, null, { encoder, decoder })
+    client = new Client(url, { WebSocket, encoder, decoder })
+    const msg = 'data'
     return eventToPromise(client, 'connect').then(() => {
       client.socket.send(encoder(msg))
       return eventToPromise(client, 'preprocessingError')
@@ -495,13 +495,13 @@ describe('ws-messaging validation', function () {
   })
 
   it('should skip validation if the option is on', function () {
-    let msg = { name: 'someEvent', field: 'data' }
+    const msg = { name: 'someEvent', field: 'data' }
     let id
     function connectionHook (client) { id = client.id }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, skipValidation: true})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, skipValidation: true })
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       c.socket.send(JSON.stringify(msg))
       return eventToPromise(client, 'someEvent')
     })
@@ -516,11 +516,11 @@ describe('ws-messaging should ignore semantically incorrect data', function () {
     function connectionHook (client) {
       id = client.id
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
-    let msg = { name: 'retry', args: [] }
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
+    const msg = { name: 'retry', args: [] }
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       c.socket.send(JSON.stringify(msg))
       c.on('retry', () => notReachable())
       return new Promise(resolve => setTimeout(resolve, 1000))
@@ -534,11 +534,11 @@ describe('ws-messaging should ignore semantically incorrect data', function () {
     function connectionHook (client) {
       id = client.id
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
-    let msg = { name: 'connect', args: [] }
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
+    const msg = { name: 'connect', args: [] }
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       c.socket.send(JSON.stringify(msg))
       c.on('retry', () => notReachable())
       return new Promise(resolve => setTimeout(resolve, 1000))
@@ -552,11 +552,11 @@ describe('ws-messaging should ignore semantically incorrect data', function () {
     function connectionHook (client) {
       id = client.id
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
-    let msg = { id: 1, result: '' }
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
+    const msg = { id: 1, result: '' }
     return eventToPromise(client, 'connect').then(() => {
-      let c = server.getClient(id)
+      const c = server.getClient(id)
       c.socket.send(JSON.stringify(msg))
       return new Promise(resolve => setTimeout(resolve, 1000))
     })
@@ -572,8 +572,8 @@ describe('ws-messaging errors', function () {
   })
 
   it('should check for registered procedures before adding a new one', function () {
-    server = new Server({port})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port })
+    client = new Client(url, { WebSocket })
     client.register('fn', () => {})
     try {
       client.register('fn', () => {})
@@ -587,8 +587,8 @@ describe('ws-messaging errors', function () {
     function connectionHook (client) {
       client.register('someProcedure', () => new Promise(() => {}))
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket, ackTimeout: 10})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket, ackTimeout: 10 })
     return eventToPromise(client, 'connect')
       .then(() => client.invoke('someProcedure'))
       .then(notReachable)
@@ -601,8 +601,8 @@ describe('ws-messaging errors', function () {
     function connectionHook (client) {
       client.register('someProcedure', () => new Promise(() => {}))
     }
-    server = new Server({port}, {connectionHook})
-    client = new Client(url, {WebSocket})
+    server = new Server({ port }, { connectionHook })
+    client = new Client(url, { WebSocket })
     return eventToPromise(client, 'connect')
       .then(() => {
         setTimeout(() => client.close(), 1000)
