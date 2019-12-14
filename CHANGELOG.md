@@ -1,6 +1,16 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [2.0.0](https://github.com/an-sh/ws-messaging/compare/v1.0.1...v2.0.0) (2019-12-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* Now only Node.js version 10 and later are supported
+* Remove browserify
+
+* updates ([825b77c](https://github.com/an-sh/ws-messaging/commit/825b77c74393efab39ef0bda43a017d8bd0796a5))
 
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/an-sh/ws-messaging/compare/v1.0.0...v1.0.1) (2018-06-23)
